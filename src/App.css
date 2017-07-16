@@ -45,9 +45,13 @@ body{
 }
 .poke-hand{
     display: flex;
-    width: 50%;
+    width: 435px;
     flex-wrap: wrap;
     margin: 0 auto;
+}
+.main{
+  display:flex;
+  padding: 0 40px;
 }
 .card {
   flex: 1 1 0%;

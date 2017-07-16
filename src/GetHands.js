@@ -19,6 +19,9 @@ export default class GetHands extends Component {
             graveyard: []
         }
     }
+    componentDidMount(){
+        this.audio.volume = .2;
+    }
     selectPokemon(pokemon, hand){
         const { poke1, poke2 } = this.state;
         let state = {};
@@ -39,7 +42,7 @@ export default class GetHands extends Component {
             second = _.clone(poke2),
             state = {};
         let _graveyard = _.clone(graveyard);
-        debugger
+        
         if(first.turns === 0 && second.turns === 0){
             if(first.spd > second.spd){
                 state = this.firstWithSpeed(first,second,_graveyard);
@@ -63,6 +66,9 @@ export default class GetHands extends Component {
                     state = this.normalBattle(first,second,_graveyard);
                 }
             }
+            if(first.turns > 0 && second.turns > 0){
+                state = this.normalBattle(first,second,_graveyard);
+            }
         }
         first.turns = first.turns+1;
         second.turns = second.turns+1;
@@ -78,21 +84,13 @@ export default class GetHands extends Component {
     }
     firstWithSpeed(first, second, _graveyard){
         const { poke1, poke2 } = this.state;
-        debugger
+        
         second.def = poke2.def - poke1.atk;
         if(second.def <= 0){
             second = {
                 img: {}
             };
             _graveyard.push(poke2.id);
-        }else{
-            first.def = poke1.def - poke2.atk;
-            if(first.def <= 0){
-                first = {
-                    img: {}
-                };
-                _graveyard.push(poke1.id);
-            }
         }
         return {
             first,
@@ -102,21 +100,13 @@ export default class GetHands extends Component {
     }
     secondWithSpeed(first, second, _graveyard){
         const { poke1, poke2 } = this.state;
-        debugger
+        
         first.def = poke1.def - poke2.atk;
         if(first.def <= 0){
             first = {
                 img: {}
             };
             _graveyard.push(poke1.id);
-        }else{
-            second.def = poke2.def - poke1.atk;
-            if(second.def <= 0){
-                second = {
-                    img: {}
-                };
-                _graveyard.push(poke2.id);
-            }
         }
         return {
             first,
@@ -126,7 +116,7 @@ export default class GetHands extends Component {
     }
     normalBattle(first, second, _graveyard){
         const { poke1, poke2 } = this.state;
-        debugger
+        
         second.def = poke2.def - poke1.atk;
         first.def = poke1.def - poke2.atk;
         if(first.def <= 0){
@@ -152,7 +142,9 @@ export default class GetHands extends Component {
         poke1 = poke1 || {};
         poke2 = poke2 || {};
         return (
-            <div>
+            <div className="main">
+                
+                <Hand selectPokemon={this.selectPokemon} player={1} graveyard={graveyard}/>
                 <div className="battle-cont">
                     {!poke1.id && <CardOutline />}
                     {poke1.id && <BattlePoke pokemon={poke1} animation="vibrate-1" />}
@@ -160,11 +152,14 @@ export default class GetHands extends Component {
                     {poke2.id && <BattlePoke pokemon={poke2} animation="vibrate-2" />}
                     <br/>
                     <button className={`battle-button ${poke1.id && poke2.id ? '' : 'disabled'}`} disabled={!poke1.id || !poke2.id} onClick={this.handleFight}>Battle</button>
-                </div><br/>
-                <div className="hands">
-                    <Hand selectPokemon={this.selectPokemon} player={1} graveyard={graveyard}/>
-                    <Hand selectPokemon={this.selectPokemon} player={2} graveyard={graveyard}/>
                 </div>
+                <Hand selectPokemon={this.selectPokemon} player={2} graveyard={graveyard}/>
+                <audio
+                    src="battle-music.mp3"
+                    ref={ref => this.audio = ref}
+                    autoPlay>
+                    Your browser does not support the <code>audio</code> element.
+                </audio>
             </div>
         )
     }

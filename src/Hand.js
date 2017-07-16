@@ -80,7 +80,7 @@ export default class Hand extends Component {
         }else{
             const pokemon = hand.map( pokemon => <Pokemon key={pokemon.id} selectPokemon={this.handleSelect} pokemon={pokemon} /> );
             return( 
-                <div style={{width:'100%'}}>
+                <div>
                     <div className="poke-hand">
                         {pokemon}
                     </div>
