@@ -157,7 +157,8 @@ export default class GetHands extends Component {
                 <audio
                     src="battle-music.mp3"
                     ref={ref => this.audio = ref}
-                    autoPlay>
+                    autoPlay
+                    loop>
                     Your browser does not support the <code>audio</code> element.
                 </audio>
             </div>

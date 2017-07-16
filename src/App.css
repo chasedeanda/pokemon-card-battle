@@ -176,8 +176,11 @@ body{
 .grass, .bug{
   background: #2ecc71;
 }
-.poison,.psychic,.fairy, .dark, .ghost {
+.poison,.psychic,.fairy {
   background: #9b59b6;
+}
+.dragon, .ghost, .dark {
+  background: #8e44ad;
 }
 .electric{
   background: #f39c12;
