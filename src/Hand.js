@@ -44,8 +44,8 @@ export default class Hand extends Component {
                         id: results[i].data.id,
                         name: results[i].data.name,
                         img: results[i].data.sprites.front_default,
-                        atk: results[i].data.stats[4].base_stat/10,
-                        def: results[i].data.stats[5].base_stat/10,
+                        atk: this.getAverage(results[i].data.stats[4].base_stat/10, results[i].data.stats[2].base_stat/10),
+                        def: this.getAverage(results[i].data.stats[1].base_stat/10, results[i].data.stats[3].base_stat/10),
                         spd: results[i].data.stats[0].base_stat/10,
                         type: results[i].data.types[0].type.name,
                         turns: 0
@@ -56,6 +56,10 @@ export default class Hand extends Component {
                     loading: false
                 });
             });
+    }
+    getAverage(num1, num2){
+        const avg = (num1+num2)/2;
+        return Math.round( avg * 10 ) / 10;
     }
     handleClick(){
         this.setState({
