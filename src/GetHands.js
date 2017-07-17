@@ -16,7 +16,9 @@ export default class GetHands extends Component {
                 img: '',
                 turns: 0
             },
-            graveyard: []
+            graveyard: [],
+            playerTurn: '',
+            mute: false
         }
     }
     componentDidMount(){
@@ -27,11 +29,13 @@ export default class GetHands extends Component {
         let state = {};
         if(hand === 1 && !poke1.id){
             state = {
-                poke1: pokemon
+                poke1: pokemon,
+                playerTurn: 'Player 2'
             }
         }else if(hand === 2 && !poke2.id){
             state = {
-                poke2: pokemon
+                poke2: pokemon,
+                playerTurn: 'Player 1'
             }
         }
         this.setState(state);
@@ -70,16 +74,25 @@ export default class GetHands extends Component {
                 state = this.normalBattle(first,second,_graveyard);
             }
         }
-        first.turns = first.turns+1;
-        second.turns = second.turns+1;
+        state.first.turns = state.first.turns+1;
+        state.second.turns = state.second.turns+1;
 
-        first.def = Math.round( first.def * 10 ) / 10;
-        second.def = Math.round( second.def * 10 ) / 10;
+        state.first.def = Math.round( state.first.def * 10 ) / 10;
+        state.second.def = Math.round( state.second.def * 10 ) / 10;
+
+        let turn = this.state.playerTurn;
+        if(state.first.id && !state.second.id){
+            turn = 'Player 2';
+        }
+        if(state.second.id && !state.first.id){
+            turn = 'Player 1';
+        }
         
         this.setState({
             poke1: state.first,
             poke2: state.second,
-            graveyard: state._graveyard
+            graveyard: state._graveyard,
+            playerTurn: turn
         });
     }
     firstWithSpeed(first, second, _graveyard){
@@ -137,37 +150,96 @@ export default class GetHands extends Component {
             _graveyard
         }
     }
+    flipACoin(){
+        let state = {};
+        const player = Math.floor(Math.random()*2 + 1);
+        if(player === 1){
+            state = {
+                playerTurn: 'Player 1'
+            }
+        }else{
+            state = {
+                playerTurn: 'Player 2'
+            }
+        }
+        this.setState(state)
+    }
+    toggleMute(){
+        this.setState({
+            mute: !this.state.mute
+        });
+    }
+    endBattle(player){
+        this.setState({
+            gameOver: true,
+            winner: player === 1 ? 2 : 1
+        });
+    }
+    newGame(){
+        this.setState({
+            poke1: {
+                img: '',
+                turns: 0
+            },
+            poke2: {
+                img: '',
+                turns: 0
+            },
+            graveyard: [],
+            playerTurn: ''
+        })
+    }
     render(){
-        let { poke1, poke2, graveyard } = this.state;
+        let { poke1, poke2, graveyard, playerTurn, mute, gameOver, winner } = this.state;
         poke1 = poke1 || {};
         poke2 = poke2 || {};
         return (
-            <div className="main">
-                
-                <Hand selectPokemon={this.selectPokemon} player={1} graveyard={graveyard}/>
-                <div className="battle-cont">
-                    {!poke1.id && <CardOutline />}
-                    {poke1.id && <BattlePoke pokemon={poke1} animation="vibrate-1" />}
-                    {!poke2.id && <CardOutline />}
-                    {poke2.id && <BattlePoke pokemon={poke2} animation="vibrate-2" />}
-                    <br/>
-                    <button className={`battle-button ${poke1.id && poke2.id ? '' : 'disabled'}`} disabled={!poke1.id || !poke2.id} onClick={this.handleFight}>Battle</button>
+            <div>
+                <div className="main">
+                    
+                    <Hand selectPokemon={this.selectPokemon} player={1} graveyard={graveyard} endBattle={this.endBattle} gameOver={gameOver}/>
+                    <div className="battle-cont">
+                        {!gameOver && playerTurn.length > 0 && (!poke1.id || !poke2.id) &&
+                            <span className="player-turn pulsate-fwd">
+                                Your Turn 
+                                <span className={playerTurn === 'Player 1' ? 'one' : 'two'}>{` ${playerTurn}`}</span>
+                            </span>
+                        }
+                        {gameOver && <span className="player-turn pulsate-fwd">
+                            <span className={`${winner === 1 ? 'one' : 'two'}`}>
+                                {`${winner === 1 ? 'Player 1 ' : 'Player 2 '} `}
+                            </span>
+                            Wins!
+                            </span>
+                        }
+                        {poke1.id && poke2.id && <span className="player-turn pulsate-fwd battle">BATTLE!</span>}
+                        {!poke1.id && <CardOutline />}
+                        {poke1.id && <BattlePoke pokemon={poke1} animation="vibrate-1" />}
+                        {!poke2.id && <CardOutline />}
+                        {poke2.id && <BattlePoke pokemon={poke2} animation="vibrate-2" />}
+                        <br/>
+                        <button className={`battle-button ${poke1.id && poke2.id ? '' : 'disabled'}`} disabled={!poke1.id || !poke2.id} onClick={this.handleFight}>Battle</button>
+                        <br/>
+                        {playerTurn.length === 0 && <button className="new-hand-btn" onClick={this.flipACoin}>Flip a coin</button>}
+                    </div>
+                    <Hand selectPokemon={this.selectPokemon} player={2} graveyard={graveyard} endBattle={this.endBattle} gameOver={gameOver}/>
                 </div>
-                <Hand selectPokemon={this.selectPokemon} player={2} graveyard={graveyard}/>
-                <audio
+                
+                {!mute && <audio
                     src="battle-music.mp3"
                     ref={ref => this.audio = ref}
                     autoPlay
                     loop>
                     Your browser does not support the <code>audio</code> element.
-                </audio>
+                </audio>}
+                <a className="mute-toggle" onClick={this.toggleMute}>{`Mute ${mute ? 'On' : 'Off'}`}</a>
             </div>
         )
     }
 }
 
 const BattlePoke = ({pokemon, animation}) => (
-    <div className={`card battle-poke ${animation} ${pokemon.type}`}>
+    <div className={`card battle-poke ${animation} ${pokemon.type} ${pokemon.turns > 0 ? 'not-first-turn' : ''}`}>
         <img src={pokemon.img} />
         <div className="info">
             <div className="name">

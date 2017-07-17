@@ -6,12 +6,6 @@ body{
 .App {
   text-align: center;
 }
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
 .App-header {
   background-color: #222;
   height: 30px;
@@ -21,27 +15,6 @@ body{
   background-size: cover;
   background-repeat: no-repeat;
   border-bottom: 2px solid #2c3e50;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.hands {
-  display: flex;
-  width: 100%;
-}
-.hands .vs{
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-}
-.hands ul {
-  flex: 1;
 }
 .poke-hand{
     display: flex;
@@ -54,7 +27,6 @@ body{
   padding: 0 40px;
 }
 .card {
-  flex: 1 1 0%;
   text-align: center;
   border: 4px solid #2c3e50;
   margin: 4px;
@@ -62,12 +34,17 @@ body{
   box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.3);
   cursor: pointer;
   width: 126px !important;
+  box-shadow: none;
+  transition: all 1s ease;
 }
 .card:hover{
   transform: scale(1.2);
 }
 .battle-poke:hover {
   transform: none;
+}
+.card.not-first-turn {
+    box-shadow: 0px 0px 28px 3px #353535 inset;
 }
 .card img{
   display:block;
@@ -148,9 +125,9 @@ body{
 .loading {
   display:flex;
   align-items:center;
-  width:100%;
   justify-content: center;
   height:135px;
+  width: 435px;
 }
 .atk{
   color: #c0392b;
@@ -189,6 +166,7 @@ body{
   background: #ecf0f1;
 }
 .new-hand-btn, .battle-button{
+  cursor: pointer;
   border: 3px solid #fff;
   padding: 10px;
   background: #16a085;
@@ -199,11 +177,49 @@ body{
   margin-top: 10px;
   box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.3);
 }
+.new-hand-btn:hover{
+  background: #118a72;
+}
+.battle-button:not(.disabled):hover {
+  background: #e03321 !important;
+}
+.player-turn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 25px;
+}
+.player-turn .one {
+  color: #2980b9;
+}
+.player-turn .two {
+  color: #c0392b;
+}
+.mute-toggle{
+  font-size: 10px;
+  position: absolute;
+  left: 20px;
+  bottom: 30px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.mute-toggle:hover{
+  border-bottom: 1px solid #222;
+}
 .vibrate-1 {
   -webkit-animation: vibrate-1 1.5s infinite; /* Safari 4+ */
   -moz-animation: vibrate-1 1.5s infinite; /* Fx 5+ */
   -o-animation: vibrate-1 1.5s infinite; /* Opera 12+ */
   animation: vibrate-1 1.5s infinite; /* IE 10+ */
+}
+.vibrate-1.not-first-turn {
+  -webkit-animation: vibrate-1 3s infinite; /* Safari 4+ */
+  -moz-animation: vibrate-1 3s infinite; /* Fx 5+ */
+  -o-animation: vibrate-1 3s infinite; /* Opera 12+ */
+  animation: vibrate-1 3s infinite; /* IE 10+ */
 }
 .vibrate-2 {
   -webkit-animation: vibrate-2 1.5s infinite; /* Safari 4+ */
@@ -211,9 +227,21 @@ body{
   -o-animation: vibrate-2 1.5s infinite; /* Opera 12+ */
   animation: vibrate-2 1.5s infinite; /* IE 10+ */
 }
+.vibrate-2.not-first-turn {
+  -webkit-animation: vibrate-2 3s infinite; /* Safari 4+ */
+  -moz-animation: vibrate-2 3s infinite; /* Fx 5+ */
+  -o-animation: vibrate-2 3s infinite; /* Opera 12+ */
+  animation: vibrate-2 3s infinite; /* IE 10+ */
+}
 .blink-1 {
   -webkit-animation: blink-1 1.5s infinite; /* Safari 4+ */
   -moz-animation: blink-1 1.5s infinite; /* Fx 5+ */
   -o-animation: blink-1 1.5s infinite; /* Opera 12+ */
   animation: blink-1 1.5s infinite; /* IE 10+ */
+}
+.pulsate-fwd {
+  -webkit-animation: pulsate-fwd 1.5s infinite; /* Safari 4+ */
+  -moz-animation: pulsate-fwd 1.5s infinite; /* Fx 5+ */
+  -o-animation: pulsate-fwd 1.5s infinite; /* Opera 12+ */
+  animation: pulsate-fwd 1.5s infinite; /* IE 10+ */
 }

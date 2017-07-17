@@ -9,7 +9,8 @@ export default class Hand extends Component {
         this.state = {
             hand: [],
             loading: true,
-            newHand: 0
+            newHand: 0,
+            battleStarted: false
         }
         this.handSize = 6;
         this.BASE = 'http://pokeapi.co/api/v2';
@@ -70,15 +71,21 @@ export default class Hand extends Component {
     }
     handleSelect(pokemon){
         this.props.selectPokemon(pokemon, this.props.player);
+        this.setState({
+            battleStarted: true
+        });
     }
     componentWillReceiveProps(nextProps){
         let hand = this.state.hand.filter( pokemon => !_.includes(nextProps.graveyard, pokemon.id))
+        if(hand.length === 0 && !nextProps.gameOver){
+            this.props.endBattle(this.props.player);
+        }
         this.setState({
             hand: hand
         });
     }
     render(){
-        const { loading, hand, newHand } = this.state;
+        const { loading, hand, newHand, battleStarted } = this.state;
         if(loading){
             return <div className="loading">Loading hand...</div>
         }else{
@@ -88,7 +95,7 @@ export default class Hand extends Component {
                     <div className="poke-hand">
                         {pokemon}
                     </div>
-                    {newHand < 2 && <button className={`new-hand-btn ${this.props.player}`} onClick={this.handleClick}>Get New Hand</button>}
+                    {newHand < 2 && !battleStarted && <button className={`new-hand-btn ${this.props.player}`} onClick={this.handleClick}>Get New Hand</button>}
                 </div>
             );
         }
@@ -96,7 +103,7 @@ export default class Hand extends Component {
 }
 
 const Pokemon = ({pokemon, selectPokemon}) => (
-<div onClick={selectPokemon.bind(this, pokemon)} className={`card ${pokemon.type}`}>
+<div onClick={selectPokemon.bind(this, pokemon)} className={`card ${pokemon.type} `}>
         <img src={pokemon.img} />
         <div className="info">
             <div className="name">
