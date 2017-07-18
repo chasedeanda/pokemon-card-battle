@@ -187,7 +187,8 @@ export default class GetHands extends Component {
     endBattle(player){
         this.setState({
             gameOver: true,
-            winner: player === 1 ? 2 : 1
+            winner: player === 1 ? 2 : 1,
+            battleMusic: 'victory.mp3'
         });
     }
     newGame(){
@@ -215,7 +216,7 @@ export default class GetHands extends Component {
             <div>
                 <div className="main">
                     
-                    <Hand selectPokemon={this.selectPokemon} player={1} graveyard={graveyard} endBattle={this.endBattle} gameOver={gameOver}/>
+                    <Hand selectPokemon={this.selectPokemon} player={1} graveyard={graveyard} endBattle={this.endBattle} gameOver={gameOver} winner={winner}/>
                     <div className="battle-cont">
                         {!gameOver && playerTurn.length > 0 && (!poke1.id || !poke2.id) &&
                             <span className="player-turn pulsate-fwd">
@@ -240,7 +241,7 @@ export default class GetHands extends Component {
                         <br/>
                         {playerTurn.length === 0 && <button className="new-hand-btn" onClick={this.flipACoin}>Flip a coin</button>}
                     </div>
-                    <Hand selectPokemon={this.selectPokemon} player={2} graveyard={graveyard} endBattle={this.endBattle} gameOver={gameOver}/>
+                    <Hand selectPokemon={this.selectPokemon} player={2} graveyard={graveyard} endBattle={this.endBattle} gameOver={gameOver} winner={winner}/>
                 </div>
                 
                 {!mute && 

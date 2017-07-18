@@ -86,11 +86,11 @@ export default class Hand extends Component {
     }
     render(){
         const { loading, hand, newHand, battleStarted } = this.state;
-        const { player } = this.props;
+        const { player, winner } = this.props;
         if(loading){
             return <div className="loading">Loading hand...</div>
         }else{
-            const pokemon = hand.map( pokemon => <Pokemon key={pokemon.id} selectPokemon={this.handleSelect} pokemon={pokemon} /> );
+            const pokemon = hand.map( pokemon => <Pokemon key={pokemon.id} selectPokemon={this.handleSelect} pokemon={pokemon} winner={winner} player={player} /> );
             return( 
                 <div>
                     <div className={`poke-hand ${player === 1 ? 'slide-in-bck-left' : 'slide-in-bck-right'}`}>
@@ -103,8 +103,8 @@ export default class Hand extends Component {
     }
 }
 
-const Pokemon = ({pokemon, selectPokemon}) => (
-<div onClick={selectPokemon.bind(this, pokemon)} className={`card ${pokemon.type} `}>
+const Pokemon = ({pokemon, selectPokemon, winner = 0, player}) => (
+<div onClick={selectPokemon.bind(this, pokemon)} className={`card ${pokemon.type} ${winner === player ? 'pulsate-fwd':''}`}>
         <img src={pokemon.img} />
         <div className="info">
             <div className="name">
