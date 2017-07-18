@@ -13,7 +13,7 @@ export default class Hand extends Component {
             battleStarted: false
         }
         this.handSize = 6;
-        this.BASE = 'http://pokeapi.co/api/v2';
+        this.BASE = 'https://pokeapi.co/api/v2';
     }
     componentDidMount(){
         this.populateHand();
