@@ -106,7 +106,8 @@ export default class GetHands extends Component {
     }
     firstWithSpeed(first, second, _graveyard){
         const { poke1, poke2 } = this.state;
-        
+        first.firstAttack = true;
+        second.firstAttack = false;
         second.def = poke2.def - poke1.atk;
         if(second.def <= 0){
             second = {
@@ -122,7 +123,8 @@ export default class GetHands extends Component {
     }
     secondWithSpeed(first, second, _graveyard){
         const { poke1, poke2 } = this.state;
-        
+        second.firstAttack = true;
+        first.firstAttack = false;
         first.def = poke1.def - poke2.atk;
         if(first.def <= 0){
             first = {
@@ -138,7 +140,8 @@ export default class GetHands extends Component {
     }
     normalBattle(first, second, _graveyard){
         const { poke1, poke2 } = this.state;
-        
+        first.firstAttack = false;
+        second.firstAttack = false;
         second.def = poke2.def - poke1.atk;
         first.def = poke1.def - poke2.atk;
         if(first.def <= 0){
@@ -263,7 +266,7 @@ export default class GetHands extends Component {
 }
 
 const BattlePoke = ({pokemon, animation}) => (
-    <div key={`${pokemon.id}-${pokemon.turns}`} className={`card battle-poke ${animation} ${pokemon.type} ${pokemon.turns > 0 ? 'not-first-turn' : ''}`}>
+    <div key={`${pokemon.id}-${pokemon.turns}`} className={`card battle-poke ${animation} ${pokemon.type} ${pokemon.turns > 0 ? 'not-first-turn' : ''} ${pokemon.firstAttack && 'first-attack'}`}>
         <img src={pokemon.img} />
         <div className="info">
             <div className="name">
