@@ -18,11 +18,18 @@ export default class GetHands extends Component {
             },
             graveyard: [],
             playerTurn: '',
-            mute: false
+            mute: false,
+            gameOver: false,
+            battleMusic: ''
         }
+        this.battleMusicTracks = ['battle-music.mp3', 'battle-music-2.mp3','battle-music-3.mp3', 'battle-music-4.mp3', 'battle-music-5.mp3'];
     }
     componentDidMount(){
         this.audio.volume = .2;
+        this.attack.volume = .5;
+        this.setState({
+            battleMusic: _.shuffle(this.battleMusicTracks)[0]
+        })
     }
     selectPokemon(pokemon, hand){
         const { poke1, poke2 } = this.state;
@@ -41,7 +48,7 @@ export default class GetHands extends Component {
         this.setState(state);
     }
     handleFight(){
-        const { poke1, poke2, graveyard } = this.state;
+        const { poke1, poke2, graveyard, mute } = this.state;
         let first = _.clone(poke1),
             second = _.clone(poke2),
             state = {};
@@ -87,6 +94,8 @@ export default class GetHands extends Component {
         if(state.second.id && !state.first.id){
             turn = 'Player 1';
         }
+
+        if(!mute) this.attack.play();
         
         this.setState({
             poke1: state.first,
@@ -152,7 +161,7 @@ export default class GetHands extends Component {
     }
     flipACoin(){
         let state = {};
-        const player = Math.floor(Math.random()*2 + 1);
+        const player = this.coinToss();
         if(player === 1){
             state = {
                 playerTurn: 'Player 1'
@@ -166,7 +175,13 @@ export default class GetHands extends Component {
     }
     toggleMute(){
         this.setState({
-            mute: !this.state.mute
+            mute: !this.state.mute,
+            battleMusic: _.shuffle(this.battleMusicTracks)[0]
+        }, () => {
+            if(!this.state.mute){
+                this.audio.volume = .2;
+                this.attack.volume = .5;
+            }
         });
     }
     endBattle(player){
@@ -189,8 +204,11 @@ export default class GetHands extends Component {
             playerTurn: ''
         })
     }
+    coinToss(){
+        return Math.floor(Math.random()*2 + 1)
+    }
     render(){
-        let { poke1, poke2, graveyard, playerTurn, mute, gameOver, winner } = this.state;
+        let { poke1, poke2, graveyard, playerTurn, mute, gameOver, battleMusic, winner } = this.state;
         poke1 = poke1 || {};
         poke2 = poke2 || {};
         return (
@@ -214,9 +232,9 @@ export default class GetHands extends Component {
                         }
                         {poke1.id && poke2.id && <span className="player-turn pulsate-fwd battle">BATTLE!</span>}
                         {!poke1.id && <CardOutline />}
-                        {poke1.id && <BattlePoke pokemon={poke1} animation="vibrate-1" />}
+                        {poke1.id && <BattlePoke pokemon={poke1} player={1} animation="poke1" />}
                         {!poke2.id && <CardOutline />}
-                        {poke2.id && <BattlePoke pokemon={poke2} animation="vibrate-2" />}
+                        {poke2.id && <BattlePoke pokemon={poke2} player={2} animation="poke2" />}
                         <br/>
                         <button className={`battle-button ${poke1.id && poke2.id ? '' : 'disabled'}`} disabled={!poke1.id || !poke2.id} onClick={this.handleFight}>Battle</button>
                         <br/>
@@ -225,13 +243,18 @@ export default class GetHands extends Component {
                     <Hand selectPokemon={this.selectPokemon} player={2} graveyard={graveyard} endBattle={this.endBattle} gameOver={gameOver}/>
                 </div>
                 
-                {!mute && <audio
-                    src="battle-music.mp3"
-                    ref={ref => this.audio = ref}
-                    autoPlay
-                    loop>
-                    Your browser does not support the <code>audio</code> element.
-                </audio>}
+                {!mute && 
+                <div>
+                    <audio
+                        src={battleMusic}
+                        ref={ref => this.audio = ref}
+                        autoPlay
+                        loop>
+                        Your browser does not support the <code>audio</code> element.
+                    </audio>
+                    <audio src="attack2.mp3" ref={ref => this.attack = ref}></audio>
+                </div>
+                }
                 <a className="mute-toggle" onClick={this.toggleMute}>{`Mute ${mute ? 'On' : 'Off'}`}</a>
             </div>
         )
@@ -239,7 +262,7 @@ export default class GetHands extends Component {
 }
 
 const BattlePoke = ({pokemon, animation}) => (
-    <div className={`card battle-poke ${animation} ${pokemon.type} ${pokemon.turns > 0 ? 'not-first-turn' : ''}`}>
+    <div key={`${pokemon.id}-${pokemon.turns}`} className={`card battle-poke ${animation} ${pokemon.type} ${pokemon.turns > 0 ? 'not-first-turn' : ''}`}>
         <img src={pokemon.img} />
         <div className="info">
             <div className="name">

@@ -92,6 +92,7 @@ body{
   float:left;
   width: 135px !important;
   cursor: default;
+  animation: 
 }
 .battle-button{
   margin: 20px auto;
@@ -163,7 +164,7 @@ body{
   background: #f39c12;
 }
 .normal, .steel{
-  background: #ecf0f1;
+  background: #bdc3c7;
 }
 .new-hand-btn, .battle-button{
   cursor: pointer;
@@ -209,39 +210,44 @@ body{
 .mute-toggle:hover{
   border-bottom: 1px solid #222;
 }
+.poke1 {
+  animation: vibrate-1 1.5s infinite,scale-in-center .5s cubic-bezier(.25,.46,.45,.94);
+}
+.poke2 {
+  animation: vibrate-2 1.5s infinite,scale-in-center .5s cubic-bezier(.25,.46,.45,.94);
+}
 .vibrate-1 {
   -webkit-animation: vibrate-1 1.5s infinite; /* Safari 4+ */
-  -moz-animation: vibrate-1 1.5s infinite; /* Fx 5+ */
-  -o-animation: vibrate-1 1.5s infinite; /* Opera 12+ */
   animation: vibrate-1 1.5s infinite; /* IE 10+ */
 }
-.vibrate-1.not-first-turn {
-  -webkit-animation: vibrate-1 3s infinite; /* Safari 4+ */
-  -moz-animation: vibrate-1 3s infinite; /* Fx 5+ */
-  -o-animation: vibrate-1 3s infinite; /* Opera 12+ */
-  animation: vibrate-1 3s infinite; /* IE 10+ */
+.poke1.not-first-turn {
+  -webkit-animation: vibrate-1 3s infinite, blink-1 0.3s ; /* Safari 4+ */
+  animation: vibrate-1 3s infinite, blink-1 0.3s ; /* IE 10+ */
 }
 .vibrate-2 {
   -webkit-animation: vibrate-2 1.5s infinite; /* Safari 4+ */
-  -moz-animation: vibrate-2 1.5s infinite; /* Fx 5+ */
-  -o-animation: vibrate-2 1.5s infinite; /* Opera 12+ */
   animation: vibrate-2 1.5s infinite; /* IE 10+ */
 }
-.vibrate-2.not-first-turn {
-  -webkit-animation: vibrate-2 3s infinite; /* Safari 4+ */
-  -moz-animation: vibrate-2 3s infinite; /* Fx 5+ */
-  -o-animation: vibrate-2 3s infinite; /* Opera 12+ */
-  animation: vibrate-2 3s infinite; /* IE 10+ */
+.poke2.not-first-turn {
+  -webkit-animation: vibrate-2 3s infinite, blink-1 0.3s; /* Safari 4+ */
+  animation: vibrate-2 3s infinite, blink-1 0.3s; /* IE 10+ */
 }
 .blink-1 {
-  -webkit-animation: blink-1 1.5s infinite; /* Safari 4+ */
-  -moz-animation: blink-1 1.5s infinite; /* Fx 5+ */
-  -o-animation: blink-1 1.5s infinite; /* Opera 12+ */
-  animation: blink-1 1.5s infinite; /* IE 10+ */
+	-webkit-animation: blink-1 0.3s both;
+  animation: blink-1 0.3s both;
+}
+.ping {
+  -webkit-animation: ping .8s infinite; /* Safari 4+ */
+  animation: ping .8s infinite; /* IE 10+ */
 }
 .pulsate-fwd {
   -webkit-animation: pulsate-fwd 1.5s infinite; /* Safari 4+ */
-  -moz-animation: pulsate-fwd 1.5s infinite; /* Fx 5+ */
-  -o-animation: pulsate-fwd 1.5s infinite; /* Opera 12+ */
   animation: pulsate-fwd 1.5s infinite; /* IE 10+ */
 }
+.slide-in-bck-right{-webkit-animation:slide-in-bck-right .6s cubic-bezier(.25,.46,.45,.94) both;animation:slide-in-bck-right .6s cubic-bezier(.25,.46,.45,.94) both}
+.slide-in-bck-left{-webkit-animation:slide-in-bck-left .6s cubic-bezier(.25,.46,.45,.94) both;animation:slide-in-bck-left .6s cubic-bezier(.25,.46,.45,.94) both}
+.scale-in-center{
+  -webkit-animation:scale-in-center .5s cubic-bezier(.25,.46,.45,.94) both;
+  animation:scale-in-center .5s cubic-bezier(.25,.46,.45,.94) both
+  }
+.tracking-in-expand{-webkit-animation:tracking-in-expand .7s cubic-bezier(.215,.61,.355,1.000) both;animation:tracking-in-expand .7s cubic-bezier(.215,.61,.355,1.000) both}

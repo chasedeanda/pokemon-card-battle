@@ -77,7 +77,7 @@ export default class Hand extends Component {
     }
     componentWillReceiveProps(nextProps){
         let hand = this.state.hand.filter( pokemon => !_.includes(nextProps.graveyard, pokemon.id))
-        if(hand.length === 0 && !nextProps.gameOver){
+        if(hand.length === 0 && !nextProps.gameOver && nextProps.graveyard.length > 0){
             this.props.endBattle(this.props.player);
         }
         this.setState({
@@ -86,13 +86,14 @@ export default class Hand extends Component {
     }
     render(){
         const { loading, hand, newHand, battleStarted } = this.state;
+        const { player } = this.props;
         if(loading){
             return <div className="loading">Loading hand...</div>
         }else{
             const pokemon = hand.map( pokemon => <Pokemon key={pokemon.id} selectPokemon={this.handleSelect} pokemon={pokemon} /> );
             return( 
                 <div>
-                    <div className="poke-hand">
+                    <div className={`poke-hand ${player === 1 ? 'slide-in-bck-left' : 'slide-in-bck-right'}`}>
                         {pokemon}
                     </div>
                     {newHand < 2 && !battleStarted && <button className={`new-hand-btn ${this.props.player}`} onClick={this.handleClick}>Get New Hand</button>}
