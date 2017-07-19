@@ -86,8 +86,6 @@ body{
 }
 .battle-cont{
     margin: 20px auto;
-    width: 310px;
-    overflow: hidden;
 }
 .battle-poke{
   float:left;
@@ -285,3 +283,14 @@ body{
   animation:scale-in-center .5s cubic-bezier(.25,.46,.45,.94) both
   }
 .tracking-in-expand{-webkit-animation:tracking-in-expand .7s cubic-bezier(.215,.61,.355,1.000) both;animation:tracking-in-expand .7s cubic-bezier(.215,.61,.355,1.000) both}
+
+@media(min-width: 980px){
+  .battle-cont {
+    margin: 20px auto;
+    width: 310px;
+    overflow: hidden;
+  }
+  .poke-hand{
+    width: auto;
+  }
+}
