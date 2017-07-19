@@ -284,7 +284,7 @@ body{
   }
 .tracking-in-expand{-webkit-animation:tracking-in-expand .7s cubic-bezier(.215,.61,.355,1.000) both;animation:tracking-in-expand .7s cubic-bezier(.215,.61,.355,1.000) both}
 
-@media(min-width: 980px){
+@media(max-width: 980px){
   .battle-cont {
     margin: 20px auto;
     width: 310px;
@@ -292,5 +292,8 @@ body{
   }
   .poke-hand{
     width: auto;
+  }
+  .main{
+    display:block;
   }
 }
