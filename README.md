@@ -1,6 +1,8 @@
 # pokemon-card-battle
 Pokemon card battling game built in React.
 
+### [Play Now!](https://pokemon-card-battle.herokuapp.com/)
+
 ```
 npm install
 npm start
