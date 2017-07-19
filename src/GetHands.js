@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import autoBind from 'react-autobind';
 import _ from 'lodash';
 import Hand from './Hand';
+import { Link } from 'react-router-dom';
 
 export default class GetHands extends Component {
     constructor(props){
@@ -22,7 +23,7 @@ export default class GetHands extends Component {
             gameOver: false,
             battleMusic: ''
         }
-        this.computerPlayer = window.location.pathname === '/single-player';
+        this.computerPlayer = props.players === 1;
         this.battleMusicTracks = ['battle-music.mp3', 'battle-music-2.mp3','battle-music-3.mp3', 'battle-music-4.mp3', 'battle-music-5.mp3'];
     }
     componentDidMount(){
@@ -216,6 +217,7 @@ export default class GetHands extends Component {
     }
     render(){
         let { poke1, poke2, graveyard, playerTurn, mute, gameOver, battleMusic, winner } = this.state;
+        const { players } = this.props;
         poke1 = poke1 || {};
         poke2 = poke2 || {};
         return (
@@ -241,6 +243,8 @@ export default class GetHands extends Component {
                                 {`${winner === 1 ? 'Player 1 ' : 'Player 2 '} `}
                             </span>
                             Wins!
+                            <br/><br/>
+                            <span><Link to={`/new-game/${players === 1 ? 'single-player' : 'multiplayer'}`}>New Game</Link></span>
                             </span>
                         }
                         {poke1.id && poke2.id && <span className="player-turn pulsate-fwd battle">BATTLE!</span>}
