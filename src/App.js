@@ -8,7 +8,7 @@ const App = ({history}) => (
     <Router history={history}>
       <div className="App">
         <Switch>
-          <Route path="/" component={Menu} />
+          <Route component={Menu} />
         </Switch> 
       </div>   
     </Router>

@@ -17,7 +17,7 @@ export default class GetHands extends Component {
                 turns: 0
             },
             graveyard: [],
-            playerTurn: '',
+            playerTurn: 0,
             mute: false,
             gameOver: false,
             battleMusic: ''
@@ -32,20 +32,22 @@ export default class GetHands extends Component {
         })
     }
     selectPokemon(pokemon, hand){
-        const { poke1, poke2 } = this.state;
-        let state = {};
-        if(hand === 1 && !poke1.id){
-            state = {
-                poke1: pokemon,
-                playerTurn: 'Player 2'
+        if(!this.state.gameOver){
+            const { poke1, poke2 } = this.state;
+            let state = {};
+            if(hand === 1 && !poke1.id){
+                state = {
+                    poke1: pokemon,
+                    playerTurn: 2
+                }
+            }else if(hand === 2 && !poke2.id){
+                state = {
+                    poke2: pokemon,
+                    playerTurn: 1
+                }
             }
-        }else if(hand === 2 && !poke2.id){
-            state = {
-                poke2: pokemon,
-                playerTurn: 'Player 1'
-            }
+            this.setState(state);
         }
-        this.setState(state);
     }
     handleFight(){
         const { poke1, poke2, graveyard, mute } = this.state;
@@ -89,10 +91,10 @@ export default class GetHands extends Component {
 
         let turn = this.state.playerTurn;
         if(state.first.id && !state.second.id){
-            turn = 'Player 2';
+            turn = 2;
         }
         if(state.second.id && !state.first.id){
-            turn = 'Player 1';
+            turn = 1;
         }
 
         if(!mute) this.attack.play();
@@ -167,11 +169,11 @@ export default class GetHands extends Component {
         const player = this.coinToss();
         if(player === 1){
             state = {
-                playerTurn: 'Player 1'
+                playerTurn: 1
             }
         }else{
             state = {
-                playerTurn: 'Player 2'
+                playerTurn: 2
             }
         }
         this.setState(state)
@@ -219,12 +221,18 @@ export default class GetHands extends Component {
             <div>
                 <div className="main">
                     
-                    <Hand selectPokemon={this.selectPokemon} player={1} graveyard={graveyard} endBattle={this.endBattle} gameOver={gameOver} winner={winner}/>
+                    <Hand 
+                        selectPokemon={this.selectPokemon} 
+                        player={1} 
+                        endBattle={this.endBattle}
+                        hasSelected={poke1.id}
+                        {...this.state}
+                    />
                     <div className="battle-cont">
-                        {!gameOver && playerTurn.length > 0 && (!poke1.id || !poke2.id) &&
+                        {!gameOver && playerTurn > 0 && (!poke1.id || !poke2.id) &&
                             <span className="player-turn pulsate-fwd">
                                 Your Turn 
-                                <span className={playerTurn === 'Player 1' ? 'one' : 'two'}>{` ${playerTurn}`}</span>
+                                <span className={playerTurn === 1 ? 'one' : 'two'}>{` ${playerTurn === 1 ? 'Player 1' : 'Player 2'}`}</span>
                             </span>
                         }
                         {gameOver && <span className="player-turn pulsate-fwd">
@@ -242,9 +250,17 @@ export default class GetHands extends Component {
                         <br/>
                         <button className={`battle-button ${poke1.id && poke2.id ? '' : 'disabled'}`} disabled={!poke1.id || !poke2.id} onClick={this.handleFight}>Battle</button>
                         <br/>
-                        {playerTurn.length === 0 && <button className="new-hand-btn" onClick={this.flipACoin}>Flip a coin</button>}
+                        {playerTurn === 0 && <button className="new-hand-btn" onClick={this.flipACoin}>Flip a coin</button>}
                     </div>
-                    <Hand selectPokemon={this.selectPokemon} player={2} graveyard={graveyard} endBattle={this.endBattle} gameOver={gameOver} winner={winner}/>
+                    <Hand 
+                        selectPokemon={this.selectPokemon} 
+                        player={2} 
+                        endBattle={this.endBattle} 
+                        opponent={poke1}
+                        hasSelected={poke2.id}
+                        computerPlayer
+                        {...this.state}
+                    />
                 </div>
                 
                 {!mute && 

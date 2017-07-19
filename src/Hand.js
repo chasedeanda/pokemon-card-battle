@@ -72,39 +72,81 @@ export default class Hand extends Component {
     handleSelect(pokemon){
         this.props.selectPokemon(pokemon, this.props.player);
         this.setState({
-            battleStarted: true
+            battleStarted: true,
+            computerThinking: false
         });
+    }
+    autoSelectBest(){
+        const { opponent } = this.props;
+        if(opponent.id){
+            const betterSpd = this.state.hand.filter( pokemon => this.isHigherThan(pokemon.spd, opponent.spd)),
+            betterAtk = this.state.hand.filter( pokemon => this.isHigherThan(pokemon.atk, opponent.atk)),
+            betterDef = this.state.hand.filter( pokemon => this.isHigherThan(pokemon.def, opponent.def)),
+            betterAll = _.intersectionBy(betterSpd,betterAtk,betterDef, 'id');
+            if(betterAll.length > 0){
+                return _.shuffle(betterAll)[0];
+            }else{
+                const nextBest = this.state.hand.filter( pokemon => {
+                    return _.includes(_.intersectionBy(betterSpd,betterAtk,'id'), pokemon) 
+                        || _.includes(_.intersectionBy(betterSpd,betterDef,'id'), pokemon) 
+                        || _.includes(_.intersectionBy(betterAtk,betterDef,'id'), pokemon) 
+                });
+                if(nextBest.length > 0){
+                    return _.shuffle(nextBest)[0];
+                }else{
+                    return this.getBestInHand();
+                }
+            }
+        }else{
+            return this.getBestInHand();
+        }
+    }
+    getBestInHand(){
+        return _.orderBy(this.state.hand, ['spd', 'atk', 'def'], ['desc','desc','desc'])[0];
+    }
+    isHigherThan(pokemon, opponent){
+        return pokemon > opponent;
     }
     componentWillReceiveProps(nextProps){
         let hand = this.state.hand.filter( pokemon => !_.includes(nextProps.graveyard, pokemon.id))
         if(hand.length === 0 && !nextProps.gameOver && nextProps.graveyard.length > 0){
             this.props.endBattle(this.props.player);
         }
+        if(nextProps.computerPlayer && hand.length > 0 && !nextProps.gameOver && nextProps.playerTurn === this.props.player){
+            this.setState({
+                computerThinking: true,
+                battleStarted: true
+            });
+            setTimeout(() => { 
+                this.handleSelect(this.autoSelectBest())
+            }, 2000)
+        }
         this.setState({
             hand: hand
         });
     }
     render(){
-        const { loading, hand, newHand, battleStarted } = this.state;
-        const { player, winner } = this.props;
+        const { loading, hand, newHand, battleStarted, computerThinking } = this.state;
+        const { player, winner, computerPlayer, hasSelected } = this.props;
         if(loading){
             return <div className="loading">Loading hand...</div>
         }else{
-            const pokemon = hand.map( pokemon => <Pokemon key={pokemon.id} selectPokemon={this.handleSelect} pokemon={pokemon} winner={winner} player={player} /> );
+            const pokemon = hand.map( pokemon => <Pokemon key={pokemon.id} cpu={computerPlayer} selectPokemon={this.handleSelect} pokemon={pokemon} winner={winner} player={player} /> );
             return( 
                 <div>
                     <div className={`poke-hand ${player === 1 ? 'slide-in-bck-left' : 'slide-in-bck-right'}`}>
                         {pokemon}
                     </div>
-                    {newHand < 2 && !battleStarted && <button className={`new-hand-btn ${this.props.player}`} onClick={this.handleClick}>Get New Hand</button>}
+                    {computerPlayer && computerThinking && !hasSelected && <span className="player-turn pulsate-fwd one">Thinking...</span>}
+                    {!computerPlayer && newHand < 2 && !battleStarted && <button className={`new-hand-btn ${this.props.player}`} onClick={this.handleClick}>Get New Hand</button>}
                 </div>
             );
         }
     }
 }
 
-const Pokemon = ({pokemon, selectPokemon, winner = 0, player}) => (
-<div onClick={selectPokemon.bind(this, pokemon)} className={`card ${pokemon.type} ${winner === player ? 'pulsate-fwd':''}`}>
+const Pokemon = ({pokemon, cpu, selectPokemon, winner = 0, player}) => (
+<div onClick={!cpu ? selectPokemon.bind(this, pokemon) : null} className={`card ${pokemon.type} ${winner === player ? 'pulsate-fwd':''}`}>
         <img src={pokemon.img} />
         <div className="info">
             <div className="name">

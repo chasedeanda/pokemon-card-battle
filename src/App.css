@@ -49,6 +49,7 @@ body{
 .card img{
   display:block;
   margin: 0 auto;
+  height: 96px;
 }
 .card .info {
   background: #ecf0f1;
@@ -92,7 +93,6 @@ body{
   float:left;
   width: 135px !important;
   cursor: default;
-  animation: 
 }
 .battle-button{
   margin: 20px auto;
@@ -198,6 +198,29 @@ body{
 }
 .player-turn .two {
   color: #c0392b;
+}
+.game-types{
+  width: 450px;
+  display:block;
+  margin: 0 auto;
+}
+.game-types a{
+  cursor: pointer;
+  border: 3px solid #fff;
+  padding: 10px;
+  background: #16a085;
+  color: #fff;
+  border-radius: 5px;
+  font-weight: bold;
+  width: 100%;
+  display:block;
+  margin-top: 10px;
+  box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.3);
+  text-align:center;
+  text-decoration: none;
+}
+.game-types a:nth-of-type(1){
+  background: #f39c12;
 }
 .mute-toggle{
   font-size: 10px;
