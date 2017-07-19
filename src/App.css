@@ -184,6 +184,15 @@ body{
 .battle-button:not(.disabled):hover {
   background: #e03321 !important;
 }
+.loading img {
+  width: 100px;
+  display: block;
+}
+.loading span {
+  display: block;
+  font-weight: bold;
+  margin-left: 10px;
+}
 .player-turn {
   display: block;
   width: 100%;
@@ -205,22 +214,12 @@ body{
   margin: 0 auto;
 }
 .game-types a{
-  cursor: pointer;
-  border: 3px solid #fff;
-  padding: 10px;
-  background: #16a085;
-  color: #fff;
-  border-radius: 5px;
+  font-size: 6em;
+  color: #222;
+  text-transform: uppercase;
   font-weight: bold;
-  width: 100%;
-  display:block;
-  margin-top: 10px;
-  box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.3);
-  text-align:center;
   text-decoration: none;
-}
-.game-types a:nth-of-type(1){
-  background: #f39c12;
+  margin: 50px 0;
 }
 .mute-toggle{
   font-size: 10px;

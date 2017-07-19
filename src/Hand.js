@@ -79,9 +79,9 @@ export default class Hand extends Component {
     autoSelectBest(){
         const { opponent } = this.props;
         if(opponent.id){
-            const betterSpd = this.state.hand.filter( pokemon => this.isHigherThan(pokemon.spd, opponent.spd)),
-            betterAtk = this.state.hand.filter( pokemon => this.isHigherThan(pokemon.atk, opponent.atk)),
-            betterDef = this.state.hand.filter( pokemon => this.isHigherThan(pokemon.def, opponent.def)),
+            const betterSpd = this.state.hand.filter( pokemon => pokemon.spd > opponent.spd),
+            betterAtk = this.state.hand.filter( pokemon => pokemon.atk > opponent.atk),
+            betterDef = this.state.hand.filter( pokemon => pokemon.def > opponent.def),
             betterAll = _.intersectionBy(betterSpd,betterAtk,betterDef, 'id');
             if(betterAll.length > 0){
                 return _.shuffle(betterAll)[0];
@@ -103,9 +103,6 @@ export default class Hand extends Component {
     }
     getBestInHand(){
         return _.orderBy(this.state.hand, ['spd', 'atk', 'def'], ['desc','desc','desc'])[0];
-    }
-    isHigherThan(pokemon, opponent){
-        return pokemon > opponent;
     }
     componentWillReceiveProps(nextProps){
         let hand = this.state.hand.filter( pokemon => !_.includes(nextProps.graveyard, pokemon.id))
@@ -129,7 +126,7 @@ export default class Hand extends Component {
         const { loading, hand, newHand, battleStarted, computerThinking } = this.state;
         const { player, winner, computerPlayer, hasSelected } = this.props;
         if(loading){
-            return <div className="loading">Loading hand...</div>
+            return <Loading player={player} />;
         }else{
             const pokemon = hand.map( pokemon => <Pokemon key={pokemon.id} cpu={computerPlayer} selectPokemon={this.handleSelect} pokemon={pokemon} winner={winner} player={player} /> );
             return( 
@@ -163,3 +160,10 @@ const Pokemon = ({pokemon, cpu, selectPokemon, winner = 0, player}) => (
         </div>
     </div>
 );
+
+const Loading = ({player}) => (
+    <div className="loading">
+        <img src={player === 1 ? 'pikachu.gif' : 'mew.gif'} /><br/>
+        <span>Catching Pokémon...</span>
+    </div>
+)

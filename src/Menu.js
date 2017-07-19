@@ -19,7 +19,25 @@ export default class Main extends Component {
 
 const Menu = () => (
     <div className="game-types scale-in-center">
-        <Link to="/single-player">Single Player</Link>
-        <Link to="/multiplayer">Multiplayer</Link>
+        <MenuOption to="/single-player" text="1P" />
+        <MenuOption to="/multiplayer" text="2P"/>
     </div>
 )
+
+class MenuOption extends Component{ 
+    constructor(){
+        super();
+        this.state = {
+            ready: false
+        }
+    }
+    render(){
+        const { to, text } = this.props;
+        const { ready } = this.state;
+        return (
+            <div className="pulsate-fwd type" onMouseEnter={() => this.setState({ ready: true })} onMouseLeave={() => this.setState({ ready: false })}>
+                <Link className="tracking-in-expand" to={to}>{ready ? 'READY!' : text}</Link>
+            </div>
+        )
+    }
+}
