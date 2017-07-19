@@ -4,8 +4,8 @@ import _ from 'lodash';
 import Hand from './Hand';
 
 export default class GetHands extends Component {
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         autoBind(this);
         this.state = {
             poke1: {
@@ -22,6 +22,7 @@ export default class GetHands extends Component {
             gameOver: false,
             battleMusic: ''
         }
+        this.computerPlayer = window.location.pathname === '/single-player';
         this.battleMusicTracks = ['battle-music.mp3', 'battle-music-2.mp3','battle-music-3.mp3', 'battle-music-4.mp3', 'battle-music-5.mp3'];
     }
     componentDidMount(){
@@ -258,7 +259,7 @@ export default class GetHands extends Component {
                         endBattle={this.endBattle} 
                         opponent={poke1}
                         hasSelected={poke2.id}
-                        computerPlayer
+                        computerPlayer={this.computerPlayer}
                         {...this.state}
                     />
                 </div>
