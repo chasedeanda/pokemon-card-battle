@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import autoBind from 'react-autobind';
 import _ from 'lodash';
 import Hand from './Hand';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { typeModifier } from './typeModifier';
 
 export default class GetHands extends Component {
     constructor(props){
@@ -88,8 +90,24 @@ export default class GetHands extends Component {
         state.first.turns = state.first.turns+1;
         state.second.turns = state.second.turns+1;
 
-        state.first.def = Math.round( state.first.def * 10 ) / 10;
-        state.second.def = Math.round( state.second.def * 10 ) / 10;
+        state.first.def = Math.round( state.first.def * 10 ) / 10 || 0;
+        state.second.def = Math.round( state.second.def * 10 ) / 10 || 0;
+
+        if(state.first.def === 0){
+            const wins = state.second.wins || 0;
+            state.second.wins = wins+1;
+        }
+        if(state.second.def === 0){
+            const wins = state.first.wins || 0;
+            state.first.wins = wins+1;
+        }
+
+        if(state.second.wins > 0 && state.second.def > 0){
+            this.evolvePokemon(second, 'poke2', this.state.poke2.def - state.second.def);
+        }
+        if(state.first.wins > 0 && state.first.def > 0){
+            this.evolvePokemon(first, 'poke1', this.state.poke1.def - state.first.def);
+        }
 
         let turn = this.state.playerTurn;
         if(state.first.id && !state.second.id){
@@ -117,7 +135,7 @@ export default class GetHands extends Component {
             second = {
                 img: {}
             };
-            _graveyard.push(poke2.id);
+            _graveyard.push(poke2.safeId);
         }
         return {
             first,
@@ -134,7 +152,7 @@ export default class GetHands extends Component {
             first = {
                 img: {}
             };
-            _graveyard.push(poke1.id);
+            _graveyard.push(poke1.safeId);
         }
         return {
             first,
@@ -152,13 +170,13 @@ export default class GetHands extends Component {
             first = {
                 img: {}
             };
-            _graveyard.push(poke1.id);
+            _graveyard.push(poke1.safeId);
         }
         if(second.def <= 0){
             second = {
                 img: {}
             };
-            _graveyard.push(poke2.id);
+            _graveyard.push(poke2.safeId);
         }
         return {
             first,
@@ -215,6 +233,50 @@ export default class GetHands extends Component {
     coinToss(){
         return Math.floor(Math.random()*2 + 1)
     }
+    evolvePokemon(pokemon, key, defDiff){
+        const BASE_V1 = 'https://pokeapi.co/api/v1';
+        const BASE_V2 = 'https://pokeapi.co/api/v2';
+        axios.get(`${BASE_V1}/pokemon/${pokemon.id}`)
+            .then( response => {
+                const nextEvolution = _.get(_.shuffle(response.data.evolutions)[0], 'to') || '';
+                if(nextEvolution.length){
+                    this.setState({
+                        [key]: {
+                            ...pokemon,
+                            evolving: true
+                        }
+                    })
+                    axios.get(`${BASE_V2}/pokemon/${nextEvolution.toLowerCase()}`)
+                        .then( response => {
+                            if(pokemon.id === this.state[key].id){
+                                this.setState({
+                                    [key]: {
+                                        id: response.data.id,
+                                        name: response.data.name,
+                                        img: response.data.sprites.front_default,
+                                        atk: this.getAverage(response.data.stats[4].base_stat/10, response.data.stats[2].base_stat/10),
+                                        def: this.roundNum(this.getAverage(response.data.stats[1].base_stat/10, response.data.stats[3].base_stat/10) - defDiff),
+                                        spd: response.data.stats[0].base_stat/10,
+                                        type: response.data.types[0].type.name,
+                                        turns: pokemon.turns,
+                                        wins: pokemon.wins,
+                                        safeId: pokemon.id,
+                                        evolved: true,
+                                        evolving: false
+                                    }
+                                });
+                            }
+                        });
+                }
+            });
+    }
+    getAverage(num1, num2){
+        const avg = (num1+num2)/2;
+        return this.roundNum(avg);
+    }
+    roundNum(num){
+        return Math.round( num * 10 ) / 10
+    }
     render(){
         let { poke1, poke2, graveyard, playerTurn, mute, gameOver, battleMusic, winner } = this.state;
         const { players } = this.props;
@@ -232,7 +294,7 @@ export default class GetHands extends Component {
                         {...this.state}
                     />
                     <div className="battle-cont">
-                        {!gameOver && playerTurn > 0 && (!poke1.id || !poke2.id) &&
+                        {!gameOver && playerTurn > 0 && (!poke1.id || !poke2.id) && !(poke1.evolving || poke2.evolving) &&
                             <span className="player-turn pulsate-fwd">
                                 Your Turn 
                                 <span className={playerTurn === 1 ? 'one' : 'two'}>{` ${playerTurn === 1 ? 'Player 1' : 'Player 2'}`}</span>
@@ -247,7 +309,8 @@ export default class GetHands extends Component {
                             <span><Link to={`/new-game/${players === 1 ? 'single-player' : 'multiplayer'}`}>New Game</Link></span>
                             </span>
                         }
-                        {poke1.id && poke2.id && <span className="player-turn pulsate-fwd battle">BATTLE!</span>}
+                        {(poke1.evolving || poke2.evolving) && <span className="player-turn pulsate-fwd battle">A POKEMON IS EVOLVING!</span>}
+                        {poke1.id && poke2.id && !(poke1.evolving || poke2.evolving) && <span className="player-turn pulsate-fwd battle">BATTLE!</span>}
                         {!poke1.id && <CardOutline />}
                         {poke1.id && <BattlePoke pokemon={poke1} player={1} animation="poke1" />}
                         {!poke2.id && <CardOutline />}
@@ -271,13 +334,13 @@ export default class GetHands extends Component {
                 {!mute && 
                 <div>
                     <audio
-                        src={battleMusic}
+                        src={`/${battleMusic}`}
                         ref={ref => this.audio = ref}
                         autoPlay
                         loop>
                         Your browser does not support the <code>audio</code> element.
                     </audio>
-                    <audio src="attack2.mp3" ref={ref => this.attack = ref}></audio>
+                    <audio src="/attack2.mp3" ref={ref => this.attack = ref}></audio>
                 </div>
                 }
                 <a className="mute-toggle" onClick={this.toggleMute}>{`Mute ${mute ? 'On' : 'Off'}`}</a>
@@ -287,7 +350,7 @@ export default class GetHands extends Component {
 }
 
 const BattlePoke = ({pokemon, animation}) => (
-    <div key={`${pokemon.id}-${pokemon.turns}`} className={`card battle-poke ${animation} ${pokemon.type} ${pokemon.turns > 0 ? 'not-first-turn' : ''} ${pokemon.firstAttack && 'first-attack'}`}>
+    <div key={`${pokemon.id}-${pokemon.turns}`} className={`card battle-poke ${animation} ${pokemon.type} ${pokemon.turns > 0 && 'not-first-turn'} ${!!pokemon.firstAttack && 'first-attack'} ${pokemon.evolving && 'evolving'} ${pokemon.evolved && 'evolved'}`}>
         <img src={pokemon.img} />
         <div className="info">
             <div className="name">
