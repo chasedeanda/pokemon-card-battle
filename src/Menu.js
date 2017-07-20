@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import GetHands from './GetHands';
-import { Route, Link, Redirect } from 'react-router-dom';
+import Game from './Game';
+import { Route, Link, Redirect, Switch } from 'react-router-dom';
 
 export default class Main extends Component {
     render(){
@@ -9,10 +10,14 @@ export default class Main extends Component {
                 <div className="App-header">
                 </div>
                 <h2 className="tracking-in-expand">Prepare to Battle!</h2>
-                <Route exact path="/" component={Menu} />
-                <Route exact path="/single-player" render={props => <GetHands players={1} />} />
-                <Route exact path="/multiplayer" render={props => <GetHands players={2} />} />
-                <Route exact path="/new-game/:type" render={props => <Redirect to={`/${props.match.params.type}`} /> }/>
+                <Switch>
+                    <Route exact path="/" component={Menu} />
+                    <Route exact path="/single-player/" render={props => <GetHands players={1} {...props} />} />
+                    <Route exact path="/multiplayer/online/" component={Game} />
+                    <Route exact path="/multiplayer/online/:code" render={props => <GetHands players={2} online {...props} />} />
+                    <Route exact path="/multiplayer" render={props => <GetHands players={2} {...props} />} />
+                    <Route exact path="/new-game/:type" render={props => <Redirect to={`/${props.match.params.type}`} /> }/>
+                </Switch>
             </div>
         );
     }

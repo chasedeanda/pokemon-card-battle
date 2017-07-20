@@ -49,7 +49,9 @@ export default class Hand extends Component {
                         def: this.getAverage(results[i].data.stats[1].base_stat/10, results[i].data.stats[3].base_stat/10),
                         spd: results[i].data.stats[0].base_stat/10,
                         type: results[i].data.types[0].type.name,
-                        turns: 0
+                        turns: 0,
+                        wins: 0,
+                        safeId: results[i].data.id
                     });
                 }
                 this.setState({
@@ -163,7 +165,7 @@ const Pokemon = ({pokemon, cpu, selectPokemon, winner = 0, player}) => (
 
 const Loading = ({player}) => (
     <div className="loading">
-        <img src={player === 1 ? 'pikachu.gif' : 'mew.gif'} /><br/>
+        <img src={player === 1 ? '/pikachu.gif' : '/mew.gif'} /><br/>
         <span>Catching Pokémon...</span>
     </div>
 )

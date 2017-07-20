@@ -230,6 +230,15 @@ body{
 .mute-toggle:hover{
   border-bottom: 1px solid #222;
 }
+.battle-poke.evolving {
+  animation: vibrate-1 .4 infinite !important;
+}
+.poke1.evolved {
+  animation: slide-in-blurred-top .5s cubic-bezier(.23,1.000,.32,1.000), vibrate-1 3s infinite;
+}
+.poke2.evolved {
+  animation: slide-in-blurred-top .5s cubic-bezier(.23,1.000,.32,1.000), vibrate-2 3s infinite;
+}
 .poke1{
   animation: vibrate-1 1.5s infinite,scale-in-center .5s cubic-bezier(.25,.46,.45,.94);
 }
@@ -248,11 +257,11 @@ body{
 .poke2.first-attack.not-first-turn {
   animation: vibrate-2 3s infinite;
 }
-.poke1.not-first-turn:not(.first-attack) {
+.poke1.not-first-turn:not(.first-attack):not(.evolved):not(.evolving) {
   -webkit-animation: vibrate-1 3s infinite, blink-1 0.3s ; /* Safari 4+ */
   animation: vibrate-1 3s infinite, blink-1 0.3s ; /* IE 10+ */
 }
-.poke2.not-first-turn:not(.first-attack) {
+.poke2.not-first-turn:not(.first-attack):not(.evolved):not(.evolving) {
   -webkit-animation: vibrate-2 3s infinite, blink-1 0.3s; /* Safari 4+ */
   animation: vibrate-2 3s infinite, blink-1 0.3s; /* IE 10+ */
 }
