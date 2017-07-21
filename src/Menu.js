@@ -9,7 +9,6 @@ export default class Main extends Component {
             <div>
                 <div className="App-header">
                 </div>
-                <h2 className="tracking-in-expand">Prepare to Battle!</h2>
                 <Switch>
                     <Route exact path="/" component={Menu} />
                     <Route exact path="/single-player/" render={props => <GetHands players={1} {...props} />} />
@@ -24,9 +23,12 @@ export default class Main extends Component {
 };
 
 const Menu = () => (
-    <div className="game-types scale-in-center">
-        <MenuOption to="/single-player" text="1P" />
-        <MenuOption to="/multiplayer" text="2P"/>
+    <div>
+        <h1 className="tracking-in-expand">Prepare to Battle!</h1>
+        <div className="game-types scale-in-center">
+            <MenuOption to="/single-player" text="1P" />
+            <MenuOption to="/multiplayer" text="2P"/>
+        </div>
     </div>
 )
 

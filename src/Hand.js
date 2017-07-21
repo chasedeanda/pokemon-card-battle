@@ -127,16 +127,18 @@ export default class Hand extends Component {
     render(){
         const { loading, hand, newHand, battleStarted, computerThinking } = this.state;
         const { player, winner, computerPlayer, hasSelected } = this.props;
+        const isThinking = computerThinking && !hasSelected;
         if(loading){
             return <Loading player={player} />;
         }else{
             const pokemon = hand.map( pokemon => <Pokemon key={pokemon.id} cpu={computerPlayer} selectPokemon={this.handleSelect} pokemon={pokemon} winner={winner} player={player} /> );
             return( 
                 <div>
+                    {!computerPlayer && <h1 className={`${player === 1 ? 'one' : 'two'}`}>{`${player === 1 ? 'Player 1' : 'Player 2'}`}</h1>}
+                    {computerPlayer && <h1 className={isThinking ? "ellipsis two":"two"}>{isThinking ? 'Thinking' : 'CPU'}</h1>}
                     <div className={`poke-hand ${player === 1 ? 'slide-in-bck-left' : 'slide-in-bck-right'}`}>
                         {pokemon}
                     </div>
-                    {computerPlayer && computerThinking && !hasSelected && <span className="player-turn pulsate-fwd one">Thinking...</span>}
                     {!computerPlayer && newHand < 2 && !battleStarted && <button className={`new-hand-btn ${this.props.player}`} onClick={this.handleClick}>Get New Hand</button>}
                 </div>
             );
@@ -164,8 +166,8 @@ const Pokemon = ({pokemon, cpu, selectPokemon, winner = 0, player}) => (
 );
 
 const Loading = ({player}) => (
-    <div className="loading">
+    <div className="loading ">
         <img src={player === 1 ? '/pikachu.gif' : '/mew.gif'} /><br/>
-        <span>Catching Pokémon...</span>
+        <span className="ellipsis">Catching Pokémon</span>
     </div>
 )

@@ -93,6 +93,9 @@ export default class GetHands extends Component {
         state.first.def = Math.round( state.first.def * 10 ) / 10 || 0;
         state.second.def = Math.round( state.second.def * 10 ) / 10 || 0;
 
+        state.first.evolved = false;
+        state.second.evolved = false;
+
         if(state.first.def === 0){
             const wins = state.second.wins || 0;
             state.second.wins = wins+1;
@@ -251,6 +254,7 @@ export default class GetHands extends Component {
                             if(pokemon.id === this.state[key].id){
                                 this.setState({
                                     [key]: {
+                                        ...pokemon,
                                         id: response.data.id,
                                         name: response.data.name,
                                         img: response.data.sprites.front_default,
@@ -258,9 +262,7 @@ export default class GetHands extends Component {
                                         def: this.roundNum(this.getAverage(response.data.stats[1].base_stat/10, response.data.stats[3].base_stat/10) - defDiff),
                                         spd: response.data.stats[0].base_stat/10,
                                         type: response.data.types[0].type.name,
-                                        turns: pokemon.turns,
-                                        wins: pokemon.wins,
-                                        safeId: pokemon.id,
+                                        wins: 0,
                                         evolved: true,
                                         evolving: false
                                     }
@@ -282,8 +284,12 @@ export default class GetHands extends Component {
         const { players } = this.props;
         poke1 = poke1 || {};
         poke2 = poke2 || {};
+        const evolving = (poke1.evolving || poke2.evolving);
         return (
             <div>
+                <div className="home-link">
+                    <Link to="/">{`< Back to Home`}</Link>
+                </div>
                 <div className="main">
                     
                     <Hand 
@@ -294,30 +300,30 @@ export default class GetHands extends Component {
                         {...this.state}
                     />
                     <div className="battle-cont">
-                        {!gameOver && playerTurn > 0 && (!poke1.id || !poke2.id) && !(poke1.evolving || poke2.evolving) &&
+                        <h1 className="tracking-in-expand">Prepare to Battle!</h1>
+                        {!gameOver && playerTurn > 0 && (!poke1.id || !poke2.id) && !evolving &&
                             <span className="player-turn pulsate-fwd">
                                 Your Turn 
                                 <span className={playerTurn === 1 ? 'one' : 'two'}>{` ${playerTurn === 1 ? 'Player 1' : 'Player 2'}`}</span>
                             </span>
                         }
-                        {gameOver && <span className="player-turn pulsate-fwd">
+                        {gameOver && <span className="player-turn pulsate-fwd winner">
                             <span className={`${winner === 1 ? 'one' : 'two'}`}>
                                 {`${winner === 1 ? 'Player 1 ' : 'Player 2 '} `}
                             </span>
                             Wins!
                             <br/><br/>
-                            <span><Link to={`/new-game/${players === 1 ? 'single-player' : 'multiplayer'}`}>New Game</Link></span>
+                            <Link to={`/new-game/${players === 1 ? 'single-player' : 'multiplayer'}`}>PLay Again?</Link>
                             </span>
                         }
-                        {(poke1.evolving || poke2.evolving) && <span className="player-turn pulsate-fwd battle">A POKEMON IS EVOLVING!</span>}
-                        {poke1.id && poke2.id && !(poke1.evolving || poke2.evolving) && <span className="player-turn pulsate-fwd battle">BATTLE!</span>}
+                        {evolving && <span className="player-turn pulsate-fwd battle">A POKEMON IS EVOLVING!</span>}
+                        {poke1.id && poke2.id && !evolving && <span className="player-turn pulsate-fwd battle">BATTLE!</span>}
                         {!poke1.id && <CardOutline />}
                         {poke1.id && <BattlePoke pokemon={poke1} player={1} animation="poke1" />}
                         {!poke2.id && <CardOutline />}
                         {poke2.id && <BattlePoke pokemon={poke2} player={2} animation="poke2" />}
                         <br/>
-                        <button className={`battle-button ${poke1.id && poke2.id ? '' : 'disabled'}`} disabled={!poke1.id || !poke2.id} onClick={this.handleFight}>Battle</button>
-                        <br/>
+                        <button className={`battle-button ${poke1.id && poke2.id || evolving ? '' : 'disabled'}`} disabled={!poke1.id || !poke2.id || evolving} onClick={this.handleFight}>Battle</button>
                         {playerTurn === 0 && <button className="new-hand-btn" onClick={this.flipACoin}>Flip a coin</button>}
                     </div>
                     <Hand 

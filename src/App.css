@@ -3,6 +3,9 @@ body{
   background-image: url('bg3.png');
   color: #2c3e50;
 }
+h1,a{
+  color: #2c3e50;  
+}
 .App {
   text-align: center;
 }
@@ -15,6 +18,17 @@ body{
   background-size: cover;
   background-repeat: no-repeat;
   border-bottom: 2px solid #2c3e50;
+  position:relative;
+}
+.home-link {
+  position: relative;
+}
+.home-link a {
+  font-weight: bold;
+  margin-top: 20px;
+  position: absolute;
+  top: -10px;
+  left: 20px;
 }
 .poke-hand{
     display: flex;
@@ -34,7 +48,6 @@ body{
   box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.3);
   cursor: pointer;
   width: 126px !important;
-  box-shadow: none;
   transition: all 1s ease;
 }
 .card:hover{
@@ -44,7 +57,7 @@ body{
   transform: none;
 }
 .card.not-first-turn {
-    box-shadow: 0px 0px 28px 3px #353535 inset;
+    box-shadow: 0px 0px 28px 3px #353535 inset, 0px 0px 28px 3px #353535 inset, 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.3) ;
 }
 .card img{
   display:block;
@@ -86,6 +99,7 @@ body{
 }
 .battle-cont{
     margin: 20px auto;
+    margin-top: 0;
 }
 .battle-poke{
   float:left;
@@ -93,7 +107,7 @@ body{
   cursor: default;
 }
 .battle-button{
-  margin: 20px auto;
+  margin: 10px auto !important;
   display:block;
   width: 310px !important;
   font-size: 16px;
@@ -127,6 +141,7 @@ body{
   justify-content: center;
   height:135px;
   width: 435px;
+  margin-top: 100px;
 }
 .atk{
   color: #c0392b;
@@ -190,6 +205,7 @@ body{
   display: block;
   font-weight: bold;
   margin-left: 10px;
+  color: #2c3e50;
 }
 .player-turn {
   display: block;
@@ -199,11 +215,12 @@ body{
   font-weight: bold;
   font-size: 20px;
   margin-bottom: 25px;
+  color: #2c3e50;
 }
-.player-turn .one {
+.one {
   color: #2980b9;
 }
-.player-turn .two {
+.two {
   color: #c0392b;
 }
 .game-types{
@@ -213,7 +230,7 @@ body{
 }
 .game-types a{
   font-size: 6em;
-  color: #222;
+  color: #2c3e50;
   text-transform: uppercase;
   font-weight: bold;
   text-decoration: none;
@@ -227,17 +244,14 @@ body{
   cursor: pointer;
   border: 1px solid transparent;
 }
+.winner{
+    font-size: 22px;
+}
 .mute-toggle:hover{
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid #2c3e50;
 }
-.battle-poke.evolving {
-  animation: vibrate-1 .4 infinite !important;
-}
-.poke1.evolved {
-  animation: slide-in-blurred-top .5s cubic-bezier(.23,1.000,.32,1.000), vibrate-1 3s infinite;
-}
-.poke2.evolved {
-  animation: slide-in-blurred-top .5s cubic-bezier(.23,1.000,.32,1.000), vibrate-2 3s infinite;
+.player-turn a {
+  color: #2c3e50;
 }
 .poke1{
   animation: vibrate-1 1.5s infinite,scale-in-center .5s cubic-bezier(.25,.46,.45,.94);
@@ -245,25 +259,64 @@ body{
 .poke2 {
   animation: vibrate-2 1.5s infinite,scale-in-center .5s cubic-bezier(.25,.46,.45,.94);
 }
-.poke1.first-attack {
+.poke1.evolved {
+  animation: slide-in-blurred-top .5s cubic-bezier(.23,1.000,.32,1.000), vibrate-1 3s infinite;
+}
+.poke2.evolved {
+  animation: slide-in-blurred-top .5s cubic-bezier(.23,1.000,.32,1.000), vibrate-2 3s infinite;
+}
+.poke1.first-attack:not(.evolved) {
   animation: vibrate-1 1.5s infinite;
 }
-.poke2.first-attack {
+.poke2.first-attack:not(.evolved) {
   animation: vibrate-2 1.5s infinite;
 }
-.poke1.first-attack.not-first-turn {
+.poke1.first-attack.not-first-turn:not(.evolved) {
   animation: vibrate-1 3s infinite;
 }
-.poke2.first-attack.not-first-turn {
+.poke2.first-attack.not-first-turn:not(.evolved) {
   animation: vibrate-2 3s infinite;
 }
-.poke1.not-first-turn:not(.first-attack):not(.evolved):not(.evolving) {
+.poke1.not-first-turn:not(.first-attack):not(.evolved) {
   -webkit-animation: vibrate-1 3s infinite, blink-1 0.3s ; /* Safari 4+ */
   animation: vibrate-1 3s infinite, blink-1 0.3s ; /* IE 10+ */
 }
-.poke2.not-first-turn:not(.first-attack):not(.evolved):not(.evolving) {
+.poke2.not-first-turn:not(.first-attack):not(.evolved) {
   -webkit-animation: vibrate-2 3s infinite, blink-1 0.3s; /* Safari 4+ */
   animation: vibrate-2 3s infinite, blink-1 0.3s; /* IE 10+ */
+}
+
+
+
+
+
+
+
+
+
+
+.ellipsis {
+  padding-right: 5px;
+}
+.ellipsis:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;    
+  animation: ellipsis steps(4,end) 1.5s infinite;
+  content: "\2026"; /* ascii code for the ellipsis character */
+  width: 0px;
+}
+
+@keyframes ellipsis {
+  to {
+    width: 1.25em;    
+  }
+}
+
+@-webkit-keyframes ellipsis {
+  to {
+    width: 1.25em;    
+  }
 }
 .vibrate-1 {
   -webkit-animation: vibrate-1 1.5s infinite; /* Safari 4+ */
@@ -304,5 +357,63 @@ body{
   }
   .main{
     display:block;
+  }
+  .card{
+    width: 80px !important;
+  }
+  .card, .card .info .stats span {
+    font-size: 10px !important;
+  }
+  .card img {
+    height: 46px;
+  }
+  .card-outline {
+    width: 80px;
+    height: 110px;
+  }
+  .card-outline:nth-of-type(1), .battle-poke:nth-of-type(1){
+    margin-left: 62px;
+  }
+  .card-outline span {
+    font-size: 10px;
+  }
+  h1{
+    font-size: 16px;
+  }
+  .battle-button {
+    font-size: 12px;
+    padding: 5px;
+    width: 191px !important;
+  }
+  .loading {
+    width: 265px;
+    margin-top: 0;
+  }
+  .loading span {
+    width: 50px;
+  }
+  .player-turn{
+    font-size: 16px;
+  }
+  .game-types{
+    width: 200px;
+  }
+}
+@media(max-width: 350px){
+  .battle-button{
+    width: 180px !important;
+  }
+  .card,.card-outline{
+    width: 64px !important;
+  }
+  .card-outline:nth-of-type(1), .battle-poke:nth-of-type(1){
+    margin-left: 44px !important;
+  }
+  .battle-cont{
+    width: 240px !important;
+  }
+  .loading {
+    width: 175px;
+    margin-top: 0;
   }
 }
