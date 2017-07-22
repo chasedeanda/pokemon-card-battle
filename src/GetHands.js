@@ -4,7 +4,6 @@ import _ from 'lodash';
 import Hand from './Hand';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { typeModifier } from './typeModifier';
 
 export default class GetHands extends Component {
     constructor(props){

@@ -30,7 +30,7 @@ export default class Hand extends Component {
         this.fetchPokemon(hand);
     }
     getRandomNumber(){
-        return Math.floor(Math.random()*718 + 1);
+        return Math.floor(Math.random()*721 + 1);
     }
     fetchPokemon(hand){
         let requests = [];
