@@ -315,9 +315,11 @@ export default class GetHands extends Component {
         return Math.round( num * 10 ) / 10
     }
     componentDidUpdate(prevState){
-        if(!_.isEqual(this.state, prevState)){
-            //Update online battleData
-            this.battleRef.set({ battleData: this.state });
+        if(this.props.online){
+            if(!_.isEqual(this.state, prevState)){
+                //Update online battleData
+                this.battleRef.set({ battleData: this.state });
+            }
         }
     }
     render(){
