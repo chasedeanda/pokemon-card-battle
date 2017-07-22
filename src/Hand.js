@@ -7,7 +7,6 @@ export default class Hand extends Component {
         super(props);
         autoBind(this);
         this.state = {
-            hand: [],
             loading: true,
             newHand: 0,
             battleStarted: false
@@ -16,7 +15,9 @@ export default class Hand extends Component {
         this.BASE = 'https://pokeapi.co/api/v2';
     }
     componentDidMount(){
-        this.populateHand();
+        if(!this.props.online || this.props.online && this.props.player === this.props.onlinePlayer){
+            this.populateHand();
+        }
     }
     populateHand(){
         let hand = [];
@@ -33,6 +34,7 @@ export default class Hand extends Component {
         return Math.floor(Math.random()*721 + 1);
     }
     fetchPokemon(hand){
+        this.props.updateHands(this.props.player, []);
         let requests = [];
         for(let i = 0; i < hand.length; i++){
             requests.push(axios.get(`${this.BASE}/pokemon/${hand[i]}`))
@@ -59,9 +61,9 @@ export default class Hand extends Component {
                     });
                 }
                 this.setState({
-                    hand: pokemon,
                     loading: false
                 });
+                this.props.updateHands(this.props.player, pokemon);
             });
     }
     getAverage(num1, num2){
@@ -85,14 +87,14 @@ export default class Hand extends Component {
     autoSelectBest(){
         const { opponent } = this.props;
         if(opponent.id){
-            const betterSpd = this.state.hand.filter( pokemon => pokemon.spd > opponent.spd),
-            betterAtk = this.state.hand.filter( pokemon => pokemon.atk > opponent.atk),
-            betterDef = this.state.hand.filter( pokemon => pokemon.def > opponent.def),
+            const betterSpd = this.props.hand.filter( pokemon => pokemon.spd > opponent.spd),
+            betterAtk = this.props.hand.filter( pokemon => pokemon.atk > opponent.atk),
+            betterDef = this.props.hand.filter( pokemon => pokemon.def > opponent.def),
             betterAll = _.intersectionBy(betterSpd,betterAtk,betterDef, 'id');
             if(betterAll.length > 0){
                 return _.shuffle(betterAll)[0];
             }else{
-                const nextBest = this.state.hand.filter( pokemon => {
+                const nextBest = this.props.hand.filter( pokemon => {
                     return _.includes(_.intersectionBy(betterSpd,betterAtk,'id'), pokemon) 
                         || _.includes(_.intersectionBy(betterSpd,betterDef,'id'), pokemon) 
                         || _.includes(_.intersectionBy(betterAtk,betterDef,'id'), pokemon) 
@@ -108,14 +110,18 @@ export default class Hand extends Component {
         }
     }
     getBestInHand(){
-        return _.orderBy(this.state.hand, ['spd', 'atk', 'def'], ['desc','desc','desc'])[0];
+        return _.orderBy(this.props.hand, ['spd', 'atk', 'def'], ['desc','desc','desc'])[0];
     }
     componentWillReceiveProps(nextProps){
-        let hand = this.state.hand.filter( pokemon => !_.find(nextProps.graveyard, {safeId: pokemon.safeId, player: nextProps.player}))
-        if(hand.length === 0 && !nextProps.gameOver && nextProps.graveyard.length > 0){
+        if(this.props.online && !_.isEqual(nextProps.hand, this.props.hand)){
+            this.setState({
+                loading: false
+            });
+        }
+        if(nextProps.hand.length === 0 && !nextProps.gameOver && nextProps.graveyard.length > 0){
             this.props.endBattle(this.props.player);
         }
-        if(nextProps.computerPlayer && hand.length > 0 && !nextProps.gameOver && nextProps.playerTurn === this.props.player){
+        if(nextProps.computerPlayer && nextProps.hand.length > 0 && !nextProps.gameOver && nextProps.playerTurn === this.props.player){
             this.setState({
                 computerThinking: true,
                 battleStarted: true
@@ -124,18 +130,21 @@ export default class Hand extends Component {
                 this.handleSelect(this.autoSelectBest())
             }, 2000)
         }
-        this.setState({
-            hand: hand
-        });
     }
     render(){
-        const { loading, hand, newHand, battleStarted, computerThinking } = this.state;
-        const { player, winner, computerPlayer, hasSelected } = this.props;
+        const { loading, newHand, battleStarted, computerThinking } = this.state;
+        const { player, winner, computerPlayer, hasSelected, hand, handlePlayerReady, playerReady, online, onlinePlayer } = this.props;
         const isThinking = computerThinking && !hasSelected;
-        if(loading){
+        if(online && onlinePlayer === player && !playerReady){
+            return (
+                <div className="loading ">
+                    <button className="no-code-btn" onClick={() => handlePlayerReady(this.props.player)}>Ready!</button>
+                </div>
+            )
+        }else if(loading){
             return <Loading player={player} />;
         }else{
-            const pokemon = hand.map( pokemon => <Pokemon key={pokemon.id} cpu={computerPlayer} selectPokemon={this.handleSelect} pokemon={pokemon} winner={winner} player={player} /> );
+            const pokemon = hand.map( pokemon => <Pokemon key={pokemon.id} cpu={computerPlayer} selectPokemon={this.handleSelect} pokemon={pokemon} winner={winner} player={player} onlinePlayer={onlinePlayer} online={online} /> );
             return( 
                 <div>
                     {!computerPlayer && <h1 className={`${player === 1 ? 'one' : 'two'}`}>{`${player === 1 ? 'Player 1' : 'Player 2'}`}</h1>}
@@ -143,15 +152,15 @@ export default class Hand extends Component {
                     <div className={`poke-hand ${player === 1 ? 'slide-in-bck-left' : 'slide-in-bck-right'}`}>
                         {pokemon}
                     </div>
-                    {!computerPlayer && newHand < 2 && !battleStarted && <button className={`new-hand-btn ${this.props.player}`} onClick={this.handleClick}>Get New Hand</button>}
+                    {!computerPlayer && newHand < 2 && !battleStarted && !(online && onlinePlayer !== player) && <button className={`new-hand-btn ${this.props.player}`} onClick={this.handleClick}>Get New Hand</button>}
                 </div>
             );
         }
     }
 }
 
-const Pokemon = ({pokemon, cpu, selectPokemon, winner = 0, player}) => (
-<div onClick={!cpu ? selectPokemon.bind(this, pokemon) : null} className={`card ${pokemon.type} ${winner === player ? 'pulsate-fwd':''}`}>
+const Pokemon = ({pokemon, cpu, selectPokemon, winner = 0, player, onlinePlayer, online}) => (
+    <div onClick={!cpu && !(online && onlinePlayer !== player) ? selectPokemon.bind(this, pokemon) : null} className={`card ${pokemon.type} ${winner === player ? 'pulsate-fwd':''}`}>
         <img src={pokemon.img} />
         <div className="info">
             <div className="name">

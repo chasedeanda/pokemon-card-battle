@@ -12,8 +12,9 @@ export default class Main extends Component {
                 <Switch>
                     <Route exact path="/" component={Menu} />
                     <Route exact path="/single-player/" render={props => <GetHands players={1} {...props} />} />
+                    <Route exact path="/multiplayer/menu/" component={MultiplayerMenu} />
                     <Route exact path="/multiplayer/online/" component={Game} />
-                    <Route exact path="/multiplayer/online/:code" render={props => <GetHands players={2} online {...props} />} />
+                    <Route exact path="/multiplayer/online/:code/:player" render={props => <GetHands players={2} online {...props} />} />
                     <Route exact path="/multiplayer" render={props => <GetHands players={2} {...props} />} />
                     <Route exact path="/new-game/:type" render={props => <Redirect to={`/${props.match.params.type}`} /> }/>
                 </Switch>
@@ -27,7 +28,17 @@ const Menu = () => (
         <h1 className="tracking-in-expand">Prepare to Battle!</h1>
         <div className="game-types scale-in-center">
             <MenuOption to="/single-player" text="1P" />
-            <MenuOption to="/multiplayer" text="2P"/>
+            <MenuOption to="/multiplayer/menu" text="2P"/>
+        </div>
+    </div>
+);
+
+const MultiplayerMenu = () => (
+        <div>
+        <h1 className="tracking-in-expand">How do you want to play?</h1>
+        <div className="game-types scale-in-center">
+            <MenuOption to="/multiplayer" text="Local" />
+            <MenuOption to="/multiplayer/online" text="Online"/>
         </div>
     </div>
 )

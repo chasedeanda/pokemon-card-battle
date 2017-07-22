@@ -14,16 +14,16 @@ export default class Game extends Component {
     }
     handleClick(){
         //Set battle code and pass it to GetHands where they can join their opponent
-        this.props.history.push(`/multiplayer/online/${this.code.value}`);
+        this.props.history.push(`/multiplayer/online/${this.code.value}/2`);
     }
     handleNoCode(){
         this.setState({
             hasCode: false
         });
     }
-    handleEnterBattle(){
+    handleEnterBattle(firstPlayer){
         //Route to GetHands with battle code
-        this.props.history.push(`/multiplayer/online/${this.state.battleCode}`);
+        this.props.history.push(`/multiplayer/online/${this.state.battleCode}/1`);
     }
     handleGetCode(){
         //Create new firebase game and show unique code. Then redirect to their game while they wait for their opponent
@@ -44,7 +44,7 @@ export default class Game extends Component {
     render(){
         const { game, hasCode, battleCode } = this.state;
         return (
-            <div>
+            <div className="main">
                 {game.id && <GetHands {...this.props} />}
                 {!game.id && 
                     <div className="code-form">
@@ -63,7 +63,7 @@ export default class Game extends Component {
                                 <p>Get a Battle Code and share it with your opponent</p>
                                 <input type="text" placeholder="Enter Battle Code" value={this.state.battleCode} readOnly /><br/>
                                 <button className="no-code-btn" onClick={this.handleGetCode}>Get Battle Code</button><br/><br/>
-                                {battleCode && <button className="enter-battle-btn" onClick={this.handleEnterBattle}>BATTLE</button> }
+                                {battleCode && <button className="enter-battle-btn" onClick={this.handleEnterBattle}>ENTER BATTLE</button> }
                             </div>
                         }
                     </div>

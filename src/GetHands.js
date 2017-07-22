@@ -23,8 +23,13 @@ export default class GetHands extends Component {
             playerTurn: 0,
             mute: false,
             gameOver: false,
-            battleMusic: ''
+            battleMusic: '',
+            player1Hand: [],
+            player2Hand: [],
+            player1Loaded: props.online ? false : true,
+            player2Loaded: props.online ? false : true
         }
+        this.onlinePlayer = +props.match.params.player;
         this.computerPlayer = props.players === 1;
         this.battleMusicTracks = ['battle-music.mp3', 'battle-music-2.mp3','battle-music-3.mp3', 'battle-music-4.mp3', 'battle-music-5.mp3'];
         if(props.online){
@@ -36,25 +41,7 @@ export default class GetHands extends Component {
         this.audio.volume = .2;
         this.attack.volume = .5;
         if(this.props.online && this.battleRef){
-            
-            this.battleRef.on('value', snapshot => {
-                const data = snapshot.val();
-                // if(this.props.player === 1 && !data.player1Loaded){
-                //     // set player1loaded to true
-                //     this.battleRef.set({
-                //         player1Loaded: true
-                //     })
-                // }
-                // if(this.props.player === 2 && !data.player2Loaded){
-                //     // set player2loaded to true
-                //     this.battleRef.set({
-                //         player2Loaded: true
-                //     })
-                // }
-                // if(data.player1Loaded && data.player2Loaded){
-                    this.setState(data.battleData);
-                // }
-            })
+            this.battleRef.on('value', snapshot => this.handleSocketUpdate(snapshot.val()));
         }
         this.setState({
             battleMusic: _.shuffle(this.battleMusicTracks)[0]
@@ -314,19 +301,46 @@ export default class GetHands extends Component {
     roundNum(num){
         return Math.round( num * 10 ) / 10
     }
-    componentDidUpdate(prevState){
+    handlePlayerReady(player){
+        let state = {};
+        if(player === 1){
+            state = {
+                player1Loaded: true
+            }
+        }else{
+            state = {
+                player2Loaded: true
+            }
+        }
+        this.setState(state);
+    }
+    updateHands(player, hand){
+        const key = player === 1 ? 'player1Hand' : 'player2Hand';
+        this.setState({
+            [key]: hand
+        });
+    }
+    getPokemon(player){
+        return this.state[`player${player}Hand`].filter( pokemon => !_.find(this.state.graveyard, {safeId: pokemon.safeId, player: player}))
+    }
+    handleSocketUpdate(data) {
+        if(!_.isEqual(this.state, data.battleData) && !this.state.gameOver){
+            // console.log('socke: ', data.battleData)
+            this.setState(data.battleData);
+        }
+    }
+    componentDidUpdate(prevProps, prevState){
         if(this.props.online){
             if(!_.isEqual(this.state, prevState)){
+                // console.log('set data: ', this.state)
                 //Update online battleData
                 this.battleRef.set({ battleData: this.state });
             }
         }
     }
     render(){
-        let { poke1, poke2, graveyard, playerTurn, mute, gameOver, battleMusic, winner } = this.state;
-        const { players } = this.props;
-        poke1 = poke1 || {};
-        poke2 = poke2 || {};
+        const { poke1, poke2, graveyard, playerTurn, mute, gameOver, battleMusic, winner, player1Hand, player2Hand, player1Loaded, player2Loaded, onlinePlayer } = this.state;
+        const { players, online } = this.props;
         const evolving = (poke1.evolving || poke2.evolving);
         return (
             <div>
@@ -340,6 +354,12 @@ export default class GetHands extends Component {
                         player={1} 
                         endBattle={this.endBattle}
                         hasSelected={poke1.id}
+                        updateHands={this.updateHands}
+                        hand={this.getPokemon(1)}
+                        playerReady={player1Loaded}
+                        handlePlayerReady={this.handlePlayerReady}
+                        onlinePlayer={this.onlinePlayer}
+                        {...this.props}
                         {...this.state}
                     />
                     <div className="battle-cont">
@@ -356,8 +376,8 @@ export default class GetHands extends Component {
                             </span>
                             Wins!
                             <br/><br/>
-                            <Link to={`/new-game/${players === 1 ? 'single-player' : 'multiplayer'}`}>PLay Again?</Link>
-                            </span>
+                            <Link to={`/new-game/${players === 1 ? 'single-player' : online ? `multiplayer/online/${this.props.match.params.code}` : 'multiplayer'}`}>PLay Again?</Link>
+                        </span>
                         }
                         {evolving && <span className="player-turn pulsate-fwd battle">A POKEMON IS EVOLVING!</span>}
                         {poke1.id && poke2.id && !evolving && <span className="player-turn pulsate-fwd battle">BATTLE!</span>}
@@ -376,6 +396,12 @@ export default class GetHands extends Component {
                         opponent={poke1}
                         hasSelected={poke2.id}
                         computerPlayer={this.computerPlayer}
+                        updateHands={this.updateHands}
+                        hand={this.getPokemon(2)}
+                        playerReady={player2Loaded}
+                        handlePlayerReady={this.handlePlayerReady}
+                        onlinePlayer={this.onlinePlayer}
+                        {...this.props}
                         {...this.state}
                     />
                 </div>
@@ -422,3 +448,17 @@ const CardOutline = () => (
         <span>Select A Pokemon</span>
     </div>
 );
+
+
+
+/*
+
+TODO:
+
+Add Player 1 Ready and Player 2 Ready buttons
+    player has to pick which one they are, then go fetch their hand
+    need to save each hand as player1Hand, player2Hand to sync battleData
+Figure out how to hide the other players cards when playing online
+
+
+*/
