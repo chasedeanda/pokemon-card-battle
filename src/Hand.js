@@ -45,13 +45,17 @@ export default class Hand extends Component {
                         id: results[i].data.id,
                         name: results[i].data.name,
                         img: results[i].data.sprites.front_default,
+                        shinyImg: results[i].data.sprites.front_shiny,
                         atk: this.getAverage(results[i].data.stats[4].base_stat/10, results[i].data.stats[2].base_stat/10),
                         def: this.getAverage(results[i].data.stats[1].base_stat/10, results[i].data.stats[3].base_stat/10),
                         spd: results[i].data.stats[0].base_stat/10,
                         type: results[i].data.types[0].type.name,
                         turns: 0,
                         wins: 0,
-                        safeId: results[i].data.id
+                        safeId: results[i].data.id,
+                        player: this.props.player,
+                        evolved: false,
+                        evolvedCount: 0
                     });
                 }
                 this.setState({
@@ -107,7 +111,7 @@ export default class Hand extends Component {
         return _.orderBy(this.state.hand, ['spd', 'atk', 'def'], ['desc','desc','desc'])[0];
     }
     componentWillReceiveProps(nextProps){
-        let hand = this.state.hand.filter( pokemon => !_.includes(nextProps.graveyard, pokemon.id))
+        let hand = this.state.hand.filter( pokemon => !_.find(nextProps.graveyard, {safeId: pokemon.safeId, player: nextProps.player}))
         if(hand.length === 0 && !nextProps.gameOver && nextProps.graveyard.length > 0){
             this.props.endBattle(this.props.player);
         }

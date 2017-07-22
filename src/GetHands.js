@@ -137,7 +137,7 @@ export default class GetHands extends Component {
             second = {
                 img: {}
             };
-            _graveyard.push(poke2.safeId);
+            _graveyard.push(poke2);
         }
         return {
             first,
@@ -154,7 +154,7 @@ export default class GetHands extends Component {
             first = {
                 img: {}
             };
-            _graveyard.push(poke1.safeId);
+            _graveyard.push(poke1);
         }
         return {
             first,
@@ -172,13 +172,13 @@ export default class GetHands extends Component {
             first = {
                 img: {}
             };
-            _graveyard.push(poke1.safeId);
+            _graveyard.push(poke1);
         }
         if(second.def <= 0){
             second = {
                 img: {}
             };
-            _graveyard.push(poke2.safeId);
+            _graveyard.push(poke2);
         }
         return {
             first,
@@ -257,13 +257,15 @@ export default class GetHands extends Component {
                                         id: response.data.id,
                                         name: response.data.name,
                                         img: response.data.sprites.front_default,
+                                        shinyImg: response.data.sprites.front_shiny,
                                         atk: this.getAverage(response.data.stats[4].base_stat/10, response.data.stats[2].base_stat/10),
                                         def: this.roundNum(this.getAverage(response.data.stats[1].base_stat/10, response.data.stats[3].base_stat/10) - defDiff),
                                         spd: response.data.stats[0].base_stat/10,
                                         type: response.data.types[0].type.name,
                                         wins: 0,
                                         evolved: true,
-                                        evolving: false
+                                        evolving: false,
+                                        evolvedCount: pokemon.evolvedCount + 1
                                     }
                                 });
                             }
