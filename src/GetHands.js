@@ -4,6 +4,7 @@ import _ from 'lodash';
 import Hand from './Hand';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import firebase from './FirebaseConnect';
 
 export default class GetHands extends Component {
     constructor(props){
@@ -26,10 +27,35 @@ export default class GetHands extends Component {
         }
         this.computerPlayer = props.players === 1;
         this.battleMusicTracks = ['battle-music.mp3', 'battle-music-2.mp3','battle-music-3.mp3', 'battle-music-4.mp3', 'battle-music-5.mp3'];
+        if(props.online){
+
+        this.battleRef = firebase.database().ref(`battles/${this.props.match.params.code}`);
+        }
     }
     componentDidMount(){
         this.audio.volume = .2;
         this.attack.volume = .5;
+        if(this.props.online && this.battleRef){
+            
+            this.battleRef.on('value', snapshot => {
+                const data = snapshot.val();
+                // if(this.props.player === 1 && !data.player1Loaded){
+                //     // set player1loaded to true
+                //     this.battleRef.set({
+                //         player1Loaded: true
+                //     })
+                // }
+                // if(this.props.player === 2 && !data.player2Loaded){
+                //     // set player2loaded to true
+                //     this.battleRef.set({
+                //         player2Loaded: true
+                //     })
+                // }
+                // if(data.player1Loaded && data.player2Loaded){
+                    this.setState(data.battleData);
+                // }
+            })
+        }
         this.setState({
             battleMusic: _.shuffle(this.battleMusicTracks)[0]
         })
@@ -86,8 +112,8 @@ export default class GetHands extends Component {
                 state = this.normalBattle(first,second,_graveyard);
             }
         }
-        state.first.turns = state.first.turns+1;
-        state.second.turns = state.second.turns+1;
+        state.first.turns = state.first.turns+1 || 1;
+        state.second.turns = state.second.turns+1 || 1;
 
         state.first.def = Math.round( state.first.def * 10 ) / 10 || 0;
         state.second.def = Math.round( state.second.def * 10 ) / 10 || 0;
@@ -287,6 +313,12 @@ export default class GetHands extends Component {
     }
     roundNum(num){
         return Math.round( num * 10 ) / 10
+    }
+    componentDidUpdate(prevState){
+        if(!_.isEqual(this.state, prevState)){
+            //Update online battleData
+            this.battleRef.set({ battleData: this.state });
+        }
     }
     render(){
         let { poke1, poke2, graveyard, playerTurn, mute, gameOver, battleMusic, winner } = this.state;

@@ -27,13 +27,13 @@ export default class Game extends Component {
     }
     handleGetCode(){
         //Create new firebase game and show unique code. Then redirect to their game while they wait for their opponent
-        const games = firebase.database().ref('battles');
+        const battles = firebase.database().ref('battles');
         const battle = {
-            code: this.getBattleCode(),
             player1Loaded: false,
             player2Loaded: false
         };
-        games.push(battle);
+        const battleRef = battles.push(battle);
+        battle.code = battleRef.key;
         this.setState({
             battleCode: battle.code
         });
@@ -47,19 +47,23 @@ export default class Game extends Component {
             <div>
                 {game.id && <GetHands {...this.props} />}
                 {!game.id && 
-                    <div>
+                    <div className="code-form">
+                        <h1 className="pulsate-fwd">Online Battle</h1>
+                        <img src="/online.svg" />
                         {hasCode &&
                             <div>
-                                <input type="text" placeholder="Enter Battle Code" ref={ref => this.code = ref} />
-                                <button onClick={this.handleClick}>BATTLE</button><br/><br/>
-                                <button onClick={this.handleNoCode}>Don't have a code?</button>
+                                <p>Copy and Paste your Battle Code below</p>
+                                <input type="text" placeholder="Enter Battle Code" ref={ref => this.code = ref} /><br/>
+                                <button className="enter-battle-btn" onClick={this.handleClick}>ENTER BATTLE</button><br/><br/>
+                                <button className="no-code-btn" onClick={this.handleNoCode}>Don't have a code?</button>
                             </div>
                         }
                          {!hasCode &&
                             <div>
-                                <input type="text" placeholder="Enter Battle Code" value={this.state.battleCode} readOnly />
-                                <button onClick={this.handleGetCode}>Get Battle Code</button><br/><br/>
-                                {battleCode && <button onClick={this.handleEnterBattle}>BATTLE</button> }
+                                <p>Get a Battle Code and share it with your opponent</p>
+                                <input type="text" placeholder="Enter Battle Code" value={this.state.battleCode} readOnly /><br/>
+                                <button className="no-code-btn" onClick={this.handleGetCode}>Get Battle Code</button><br/><br/>
+                                {battleCode && <button className="enter-battle-btn" onClick={this.handleEnterBattle}>BATTLE</button> }
                             </div>
                         }
                     </div>
