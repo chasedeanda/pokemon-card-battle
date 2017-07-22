@@ -267,6 +267,14 @@ export default class GetHands extends Component {
                                     }
                                 });
                             }
+                        })
+                        .catch(() => {
+                            this.setState({
+                                [key]: {
+                                    ...pokemon,
+                                    evolving: false
+                                }
+                            })
                         });
                 }
             });
