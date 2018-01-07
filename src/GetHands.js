@@ -339,7 +339,7 @@ export default class GetHands extends Component {
         }
     }
     render(){
-        const { poke1, poke2, graveyard, playerTurn, mute, gameOver, battleMusic, winner, player1Hand, player2Hand, player1Loaded, player2Loaded, onlinePlayer } = this.state;
+        const { poke1, poke2, graveyard, playerTurn, mute, gameOver, battleMusic, winner, player1Hand, player2Hand, player1Loaded, player2Loaded } = this.state;
         const { players, online } = this.props;
         const evolving = (poke1.evolving || poke2.evolving);
         return (
@@ -376,7 +376,7 @@ export default class GetHands extends Component {
                             </span>
                             Wins!
                             <br/><br/>
-                            <Link to={`/new-game/${players === 1 ? 'single-player' : online ? `multiplayer/online/${this.props.match.params.code}` : 'multiplayer'}`}>PLay Again?</Link>
+                            <Link to={`/new-game/${players === 1 ? 'single-player' : online ? `multiplayer/online/${this.props.match.params.code}/${this.onlinePlayer}` : 'multiplayer'}`}>PLay Again?</Link>
                         </span>
                         }
                         {evolving && <span className="player-turn pulsate-fwd battle">A POKEMON IS EVOLVING!</span>}
@@ -460,5 +460,12 @@ Add Player 1 Ready and Player 2 Ready buttons
     need to save each hand as player1Hand, player2Hand to sync battleData
 Figure out how to hide the other players cards when playing online
 
+Update mobile layou
+    ready buttons
+    multiplayer menu
 
+when you enter the page you should always be player 1 and you should only see your cards
+    choose to get new hand or ready for battle
+    the other player also has to be ready
+    flip a coin and then reveal the hands
 */
